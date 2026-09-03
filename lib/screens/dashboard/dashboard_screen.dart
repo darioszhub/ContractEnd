@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../widgets/app_sidebar.dart';
 import '../../widgets/stat_card.dart';
+import '../../models/contract.dart';
 import '../clients/clients_screen.dart';
 import '../contracts/contracts_screen.dart';
+import '../../repositories/contract_repository.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -14,6 +16,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int selectedIndex = 0;
+  final ContractRepository _repository = ContractRepository.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +66,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
+  DateTime _parseDate(String date) {
+    final parts = date.split('/');
+
+    return DateTime(
+      int.parse(parts[2]),
+      int.parse(parts[1]),
+      int.parse(parts[0]),
+    );
+  }
+
+  List<Contract> _getUpcomingContracts() {
+    final today = DateTime.now();
+
+    final contracts = _repository.contracts.where((contract) {
+      final expirationDate = _parseDate(contract.expirationDate);
+
+      return !expirationDate.isBefore(today);
+    }).toList();
+
+    contracts.sort((a, b) {
+      final dateA = _parseDate(a.expirationDate);
+      final dateB = _parseDate(b.expirationDate);
+
+      return dateA.compareTo(dateB);
+    });
+
+    return contracts.take(5).toList();
+  }
+
   Widget _buildDashboard() {
+    final totalContracts = _repository.contracts.length;
+
+    final expiringContracts = _repository.contracts.where((contract) {
+      final days = _parseDate(contract.expirationDate)
+          .difference(DateTime.now())
+          .inDays;
+
+      return days >= 0 && days <= 30;
+    }).length;
+
+    final expiredContracts = _repository.contracts.where((contract) {
+      final days = _parseDate(contract.expirationDate)
+          .difference(DateTime.now())
+          .inDays;
+
+      return days < 0;
+    }).length;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(30),
       child: Column(
@@ -84,20 +134,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(height: 30),
 
           Row(
-            children: const [
+            children: [
               StatCard(
                 title: 'Contratti',
-                value: '128',
+                value: totalContracts.toString(),
                 icon: Icons.description_outlined,
               ),
               SizedBox(width: 20),
               StatCard(
                 title: 'In scadenza',
-                value: '12',
+                value: expiringContracts.toString(),
                 icon: Icons.warning_amber_outlined,
               ),
               SizedBox(width: 20),
-              StatCard(title: 'Scaduti', value: '4', icon: Icons.error_outline),
+              StatCard(
+                title: 'Scaduti',
+                value: expiredContracts.toString(),
+                icon: Icons.error_outline,
+              ),
             ],
           ),
 
@@ -117,6 +171,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildContractsTable() {
+    final contracts = _getUpcomingContracts();
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -130,32 +186,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
           DataColumn(label: Text('Scadenza')),
           DataColumn(label: Text('Stato')),
         ],
-        rows: const [
-          DataRow(
+        rows: contracts.map((contract) {
+          final days = _parseDate(contract.expirationDate)
+              .difference(DateTime.now())
+              .inDays;
+
+          String status;
+
+          if (days < 0) {
+            status = 'Scaduto';
+          } else if (days <= 30) {
+            status = 'In scadenza';
+          } else {
+            status = 'Attivo';
+          }
+
+          return DataRow(
             cells: [
-              DataCell(Text('Mario Rossi')),
-              DataCell(Text('Assistenza')),
-              DataCell(Text('15/09/2026')),
-              DataCell(Text('In scadenza')),
+              DataCell(Text(contract.client)),
+              DataCell(Text(contract.type)),
+              DataCell(Text(contract.expirationDate)),
+              DataCell(Text(status)),
             ],
-          ),
-          DataRow(
-            cells: [
-              DataCell(Text('Alfa S.r.l.')),
-              DataCell(Text('Consulenza')),
-              DataCell(Text('20/09/2026')),
-              DataCell(Text('In scadenza')),
-            ],
-          ),
-          DataRow(
-            cells: [
-              DataCell(Text('Luca Bianchi')),
-              DataCell(Text('Manutenzione')),
-              DataCell(Text('12/11/2026')),
-              DataCell(Text('Attivo')),
-            ],
-          ),
-        ],
+          );
+        }).toList(),
       ),
     );
   }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
+import '../../models/contract.dart';
+
 class ContractFormDialog extends StatefulWidget {
-  final Map<String, dynamic>? contract;
+  final Contract? contract;
 
   const ContractFormDialog({super.key, this.contract});
 
@@ -30,29 +32,29 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
     super.initState();
 
     final contract = widget.contract;
-    _filePath = contract?['filePath'];
+    _filePath = contract?.filePath;
 
-    _numberController = TextEditingController(text: contract?['number'] ?? '');
+    _numberController = TextEditingController(text: contract?.number ?? '');
 
-    _typeController = TextEditingController(text: contract?['type'] ?? '');
+    _typeController = TextEditingController(text: contract?.type ?? '');
 
     _startDateController = TextEditingController(
-      text: contract?['startDate'] ?? '',
+      text: contract?.startDate ?? '',
     );
 
     _expirationDateController = TextEditingController(
-      text: contract?['expirationDate'] ?? '',
+      text: contract?.expirationDate ?? '',
     );
 
     _amountController = TextEditingController(
-      text: contract?['amount']?.toString() ?? '',
+      text: contract?.amount?.toString() ?? '',
     );
 
-    _notesController = TextEditingController(text: contract?['notes'] ?? '');
+    _notesController = TextEditingController(text: contract?.notes ?? '');
 
     if (contract != null) {
-      _selectedClient = contract['client'];
-      _selectedFrequency = contract['frequency'];
+      _selectedClient = contract.client;
+      _selectedFrequency = contract.frequency;
     }
   }
 
@@ -61,18 +63,17 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
       return;
     }
 
-    final contract = {
-      'client': _selectedClient,
-      'type': _typeController.text,
-      'number': _numberController.text,
-      'startDate': _startDateController.text,
-      'expirationDate': _expirationDateController.text,
-      'amount':
-          double.tryParse(_amountController.text.replaceAll(',', '.')) ?? 0,
-      'frequency': _selectedFrequency,
-      'filePath': _filePath ?? '',
-      'notes': _notesController.text,
-    };
+    final contract = Contract(
+      client: _selectedClient,
+      type: _typeController.text,
+      number: _numberController.text,
+      startDate: _startDateController.text,
+      expirationDate: _expirationDateController.text,
+      amount: double.tryParse(_amountController.text.replaceAll(',', '.')),
+      frequency: _selectedFrequency,
+      filePath: _filePath ?? '',
+      notes: _notesController.text,
+    );
 
     Navigator.pop(context, contract);
   }

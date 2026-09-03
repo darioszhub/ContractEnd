@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'contract_form_dialog.dart';
+import '../../models/contract.dart';
+import '../../repositories/contract_repository.dart';
 
 class ContractsScreen extends StatefulWidget {
   const ContractsScreen({super.key});
@@ -11,42 +13,7 @@ class ContractsScreen extends StatefulWidget {
 
 class _ContractsScreenState extends State<ContractsScreen> {
   final TextEditingController _searchController = TextEditingController();
-
-  final List<Map<String, dynamic>> _contracts = [
-    {
-      'client': 'Mario Rossi',
-      'type': 'Telefonia',
-      'number': 'CTR-2025-001',
-      'startDate': '15/10/2025',
-      'expirationDate': '15/10/2026',
-      'amount': 49.90,
-      'frequency': 'Mensile',
-      'filePath': '',
-      'notes': '',
-    },
-    {
-      'client': 'Luca Bianchi',
-      'type': 'Internet',
-      'number': 'CTR-2025-002',
-      'startDate': '05/09/2025',
-      'expirationDate': '05/09/2026',
-      'amount': 39.90,
-      'frequency': 'Mensile',
-      'filePath': '',
-      'notes': '',
-    },
-    {
-      'client': 'Alfa S.r.l.',
-      'type': 'Energia',
-      'number': 'CTR-2026-015',
-      'startDate': '20/09/2025',
-      'expirationDate': '20/09/2026',
-      'amount': 1250.00,
-      'frequency': 'Annuale',
-      'filePath': '',
-      'notes': '',
-    },
-  ];
+  final ContractRepository _repository = ContractRepository.instance;
 
   String _searchText = '';
 
@@ -67,17 +34,17 @@ class _ContractsScreenState extends State<ContractsScreen> {
     super.dispose();
   }
 
-  List<Map<String, dynamic>> get _filteredContracts {
+  List<Contract> get _filteredContracts {
     if (_searchText.isEmpty) {
-      return _contracts;
+      return _repository.contracts;
     }
 
-    return _contracts.where((contract) {
+    return _repository.contracts.where((contract) {
       final searchData =
-          '${contract['client']} '
-          '${contract['type']} '
-          '${contract['number']}'
-          .toLowerCase();
+          '${contract.client} '
+                  '${contract.type} '
+                  '${contract.number}'
+              .toLowerCase();
 
       return searchData.contains(_searchText);
     }).toList();
@@ -119,30 +86,28 @@ class _ContractsScreenState extends State<ContractsScreen> {
     return Colors.green;
   }
 
-  void _openContractForm({Map<String, dynamic>? contract}) async {
-    final result = await showDialog<Map<String, dynamic>>(
+  void _openContractForm({Contract? contract}) async {
+    final result = await showDialog<Contract>(
       context: context,
-      builder: (context) => ContractFormDialog(
-        contract: contract,
-      ),
+      builder: (context) => ContractFormDialog(contract: contract),
     );
 
     if (result == null) return;
 
     setState(() {
       if (contract == null) {
-        _contracts.add(result);
+        _repository.add(result);
       } else {
-        final index = _contracts.indexOf(contract);
+        final index = _repository.contracts.indexOf(contract);
 
         if (index != -1) {
-          _contracts[index] = result;
+          _repository.update(index, result);
         }
       }
     });
   }
 
-  void _deleteContract(Map<String, dynamic> contract) {
+  void _deleteContract(Contract contract) {
     showDialog(
       context: context,
       builder: (context) {
@@ -150,7 +115,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
           title: const Text('Elimina contratto'),
           content: Text(
             'Sei sicuro di voler eliminare '
-            '${contract['number']}?',
+            '${contract.number}?',
           ),
           actions: [
             TextButton(
@@ -160,7 +125,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
             FilledButton(
               onPressed: () {
                 setState(() {
-                  _contracts.remove(contract);
+                  _repository.delete(contract);
                 });
 
                 Navigator.pop(context);
@@ -187,10 +152,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
               const Expanded(
                 child: Text(
                   'Contratti',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
               ),
 
@@ -211,10 +173,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
 
           const Text(
             'Gestisci i contratti e monitora le relative scadenze',
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 16,
-            ),
+            style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
 
           const SizedBox(height: 25),
@@ -254,10 +213,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
                   ? const Center(
                       child: Text(
                         'Nessun contratto trovato',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
                       ),
                     )
                   : SingleChildScrollView(
@@ -273,7 +229,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
                         ],
                         rows: contracts.map((contract) {
                           final days = _daysUntilExpiration(
-                            contract['expirationDate'],
+                            contract.expirationDate,
                           );
 
                           final status = _getStatus(days);
@@ -283,21 +239,15 @@ class _ContractsScreenState extends State<ContractsScreen> {
                             cells: [
                               DataCell(
                                 Text(
-                                  contract['client'],
+                                  contract.client,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
-                              DataCell(
-                                Text(contract['type']),
-                              ),
-                              DataCell(
-                                Text(contract['number']),
-                              ),
-                              DataCell(
-                                Text(contract['expirationDate']),
-                              ),
+                              DataCell(Text(contract.type)),
+                              DataCell(Text(contract.number)),
+                              DataCell(Text(contract.expirationDate)),
                               DataCell(
                                 Text(
                                   days < 0
@@ -330,22 +280,16 @@ class _ContractsScreenState extends State<ContractsScreen> {
                                     IconButton(
                                       tooltip: 'Modifica',
                                       onPressed: () {
-                                        _openContractForm(
-                                          contract: contract,
-                                        );
+                                        _openContractForm(contract: contract);
                                       },
-                                      icon: const Icon(
-                                        Icons.edit_outlined,
-                                      ),
+                                      icon: const Icon(Icons.edit_outlined),
                                     ),
                                     IconButton(
                                       tooltip: 'Elimina',
                                       onPressed: () {
                                         _deleteContract(contract);
                                       },
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                      ),
+                                      icon: const Icon(Icons.delete_outline),
                                     ),
                                   ],
                                 ),
