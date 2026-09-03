@@ -19,13 +19,20 @@ class AppSidebar extends StatelessWidget {
         children: [
           const SizedBox(height: 30),
 
-          const Text(
-            'ContractEnd',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/icons/app_icon.png', width: 40, height: 40),
+              const SizedBox(width: 10),
+              const Text(
+                'ContractEnd',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 40),
