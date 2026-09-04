@@ -26,13 +26,36 @@ class DatabaseHelper {
 
     final directory = await getApplicationSupportDirectory();
 
-    final path = join(
-      directory.path,
-      'contractend.db',
-    );
+    final path = join(directory.path, 'contractend.db');
 
     return await databaseFactory.openDatabase(
       path,
+      options: OpenDatabaseOptions(
+        version: 2,
+        onCreate: (db, version) async {
+          await db.execute('''
+        CREATE TABLE clients (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          surname TEXT NOT NULL,
+          company TEXT,
+          phone TEXT,
+          email TEXT,
+          notes TEXT,
+          TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          TimestampEDT TEXT
+        )
+      ''');
+        },
+        onUpgrade: (db, oldVersion, newVersion) async {
+          if (oldVersion < 2) {
+            await db.execute('ALTER TABLE clients ADD COLUMN taxCode TEXT');
+            await db.execute('ALTER TABLE clients ADD COLUMN vat TEXT');
+            await db.execute('ALTER TABLE clients ADD COLUMN address TEXT');
+            await db.execute('ALTER TABLE clients ADD COLUMN city TEXT');
+          }
+        },
+      ),
     );
   }
 }

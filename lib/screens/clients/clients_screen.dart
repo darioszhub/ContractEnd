@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../models/client.dart';
+import '../../repositories/client_repository.dart';
 import 'client_form_dialog.dart';
 
 class ClientsScreen extends StatefulWidget {
@@ -12,32 +14,7 @@ class ClientsScreen extends StatefulWidget {
 class _ClientsScreenState extends State<ClientsScreen> {
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> _clients = [
-    {
-      'name': 'Mario',
-      'surname': 'Rossi',
-      'company': '',
-      'phone': '333 1234567',
-      'email': 'mario.rossi@email.it',
-      'contracts': 2,
-    },
-    {
-      'name': 'Luca',
-      'surname': 'Bianchi',
-      'company': '',
-      'phone': '347 9876543',
-      'email': 'luca.bianchi@email.it',
-      'contracts': 1,
-    },
-    {
-      'name': '',
-      'surname': '',
-      'company': 'Alfa S.r.l.',
-      'phone': '095 123456',
-      'email': 'info@alfasrl.it',
-      'contracts': 5,
-    },
-  ];
+  final List<Client> _clients = [];
 
   String _searchText = '';
 
@@ -50,6 +27,17 @@ class _ClientsScreenState extends State<ClientsScreen> {
         _searchText = _searchController.text.toLowerCase();
       });
     });
+    _loadClients();
+  }
+
+  Future<void> _loadClients() async {
+    final clients = await ClientRepository.instance.getAll();
+
+    setState(() {
+      _clients
+        ..clear()
+        ..addAll(clients);
+    });
   }
 
   @override
@@ -58,39 +46,59 @@ class _ClientsScreenState extends State<ClientsScreen> {
     super.dispose();
   }
 
-  List<Map<String, dynamic>> get _filteredClients {
+  List<Client> get _filteredClients {
     if (_searchText.isEmpty) {
       return _clients;
     }
 
     return _clients.where((client) {
-      final name = '${client['name']} ${client['surname']} ${client['company']}'
+      final name = '${client.name} ${client.surname} ${client.company ?? ''}'
           .toLowerCase();
 
       return name.contains(_searchText);
     }).toList();
   }
 
-  void _openClientForm() async {
-    final client = await showDialog<Map<String, dynamic>>(
+  Future<void> _openClientForm() async {
+    final client = await showDialog<Client>(
       context: context,
       builder: (context) => const ClientFormDialog(),
     );
 
     if (client != null) {
+      final id = await ClientRepository.instance.insert(client);
+
+      final savedClient = Client(
+        id: id,
+        name: client.name,
+        surname: client.surname,
+        company: client.company,
+        taxCode: client.taxCode,
+        vat: client.vat,
+        phone: client.phone,
+        email: client.email,
+        address: client.address,
+        city: client.city,
+        notes: client.notes,
+        timestampINS: client.timestampINS,
+        timestampEDT: client.timestampEDT,
+      );
+
       setState(() {
-        _clients.add(client);
+        _clients.add(savedClient);
       });
     }
   }
 
-  void _editClient(Map<String, dynamic> client) async {
-    final updatedClient = await showDialog<Map<String, dynamic>>(
+  Future<void> _editClient(Client client) async {
+    final updatedClient = await showDialog<Client>(
       context: context,
       builder: (context) => ClientFormDialog(client: client),
     );
 
     if (updatedClient != null) {
+      await ClientRepository.instance.update(updatedClient);
+
       setState(() {
         final index = _clients.indexOf(client);
 
@@ -101,43 +109,48 @@ class _ClientsScreenState extends State<ClientsScreen> {
     }
   }
 
-  void _deleteClient(Map<String, dynamic> client) {
-    showDialog(
+  Future<void> _deleteClient(Client client) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: const Text('Elimina cliente'),
           content: Text(
-            'Sei sicuro di voler eliminare '
-            '${client['company'].toString().isNotEmpty ? client['company'] : '${client['name']} ${client['surname']}'}?',
+            'Sei sicuro di voler eliminare ${_getClientName(client)}?',
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(dialogContext, false),
               child: const Text('Annulla'),
             ),
             FilledButton(
-              onPressed: () {
-                setState(() {
-                  _clients.remove(client);
-                });
-
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(dialogContext, true),
               child: const Text('Elimina'),
             ),
           ],
         );
       },
     );
-  }
 
-  String _getClientName(Map<String, dynamic> client) {
-    if (client['company'].toString().isNotEmpty) {
-      return client['company'];
+    if (confirmed != true) {
+      return;
     }
 
-    return '${client['name']} ${client['surname']}';
+    await ClientRepository.instance.delete(client);
+
+    if (!mounted) return;
+
+    setState(() {
+      _clients.remove(client);
+    });
+  }
+
+  String _getClientName(Client client) {
+    if (client.company != null && client.company!.isNotEmpty) {
+      return client.company!;
+    }
+
+    return '${client.name} ${client.surname}';
   }
 
   @override
@@ -238,9 +251,10 @@ class _ClientsScreenState extends State<ClientsScreen> {
                                   ),
                                 ),
                               ),
-                              DataCell(Text(client['phone'])),
-                              DataCell(Text(client['email'])),
-                              DataCell(Text(client['contracts'].toString())),
+                              DataCell(Text(client.phone ?? '')),
+                              DataCell(Text(client.email ?? '')),
+                              //DataCell(Text(client['contracts'].toString())),
+                              const DataCell(Text('0')), // Da sostituire una volte che creo la tabella contracts
                               DataCell(
                                 Row(
                                   children: [

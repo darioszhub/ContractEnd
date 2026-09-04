@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../models/client.dart';
+
 class ClientFormDialog extends StatefulWidget {
-  final Map<String, dynamic>? client;
+  final Client? client;
 
   const ClientFormDialog({super.key, this.client});
 
@@ -31,25 +33,16 @@ class _ClientFormDialogState extends State<ClientFormDialog> {
 
     final client = widget.client;
 
-    _nameController = TextEditingController(text: client?['name'] ?? '');
-
-    _surnameController = TextEditingController(text: client?['surname'] ?? '');
-
-    _companyController = TextEditingController(text: client?['company'] ?? '');
-
-    _taxCodeController = TextEditingController(text: client?['taxCode'] ?? '');
-
-    _vatController = TextEditingController(text: client?['vat'] ?? '');
-
-    _phoneController = TextEditingController(text: client?['phone'] ?? '');
-
-    _emailController = TextEditingController(text: client?['email'] ?? '');
-
-    _addressController = TextEditingController(text: client?['address'] ?? '');
-
-    _cityController = TextEditingController(text: client?['city'] ?? '');
-
-    _notesController = TextEditingController(text: client?['notes'] ?? '');
+    _nameController = TextEditingController(text: client?.name ?? '');
+    _surnameController = TextEditingController(text: client?.surname ?? '');
+    _companyController = TextEditingController(text: client?.company ?? '');
+    _taxCodeController = TextEditingController(text: client?.taxCode ?? '');
+    _vatController = TextEditingController(text: client?.vat ?? '');
+    _phoneController = TextEditingController(text: client?.phone ?? '');
+    _emailController = TextEditingController(text: client?.email ?? '');
+    _addressController = TextEditingController(text: client?.address ?? '');
+    _cityController = TextEditingController(text: client?.city ?? '');
+    _notesController = TextEditingController(text: client?.notes ?? '');
   }
 
   @override
@@ -73,19 +66,21 @@ class _ClientFormDialogState extends State<ClientFormDialog> {
       return;
     }
 
-    final client = {
-      'name': _nameController.text.trim(),
-      'surname': _surnameController.text.trim(),
-      'company': _companyController.text.trim(),
-      'taxCode': _taxCodeController.text.trim(),
-      'vat': _vatController.text.trim(),
-      'phone': _phoneController.text.trim(),
-      'email': _emailController.text.trim(),
-      'address': _addressController.text.trim(),
-      'city': _cityController.text.trim(),
-      'notes': _notesController.text.trim(),
-      'contracts': widget.client?['contracts'] ?? 0,
-    };
+    final client = Client(
+      id: widget.client?.id,
+      name: _nameController.text.trim(),
+      surname: _surnameController.text.trim(),
+      company: _companyController.text.trim(),
+      taxCode: _taxCodeController.text.trim(),
+      vat: _vatController.text.trim(),
+      phone: _phoneController.text.trim(),
+      email: _emailController.text.trim(),
+      address: _addressController.text.trim(),
+      city: _cityController.text.trim(),
+      notes: _notesController.text.trim(),
+      timestampINS: widget.client?.timestampINS ?? DateTime.now(),
+      timestampEDT: widget.client?.timestampEDT,
+    );
 
     Navigator.pop(context, client);
   }
