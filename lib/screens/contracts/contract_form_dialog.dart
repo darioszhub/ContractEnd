@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../models/contract.dart';
+import '../../models/client.dart';
 
 class ContractFormDialog extends StatefulWidget {
   final Contract? contract;
+  final List<Client> clients;
 
-  const ContractFormDialog({super.key, this.contract});
+  const ContractFormDialog({super.key, this.contract, required this.clients});
 
   @override
   State<ContractFormDialog> createState() => _ContractFormDialogState();
@@ -21,7 +23,7 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
   late final TextEditingController _notesController;
   final _formKey = GlobalKey<FormState>();
 
-  String _selectedClient = 'Mario Rossi';
+  int? _selectedClientId;
   String _selectedFrequency = 'Mensile';
   String? _filePath;
 
@@ -53,7 +55,7 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
     _notesController = TextEditingController(text: contract?.notes ?? '');
 
     if (contract != null) {
-      _selectedClient = contract.client;
+      _selectedClientId = contract.clientId;
       _selectedFrequency = contract.frequency;
     }
   }
@@ -64,15 +66,18 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
     }
 
     final contract = Contract(
-      client: _selectedClient,
-      type: _typeController.text,
-      number: _numberController.text,
+      id: widget.contract?.id,
+      clientId: _selectedClientId!,
+      type: _typeController.text.trim(),
+      number: _numberController.text.trim(),
       startDate: _startDateController.text,
       expirationDate: _expirationDateController.text,
       amount: double.tryParse(_amountController.text.replaceAll(',', '.')),
       frequency: _selectedFrequency,
-      filePath: _filePath ?? '',
-      notes: _notesController.text,
+      filePath: _filePath,
+      notes: _notesController.text.trim(),
+      timestampINS: widget.contract?.timestampINS ?? DateTime.now(),
+      timestampEDT: widget.contract?.timestampEDT,
     );
 
     Navigator.pop(context, contract);
@@ -151,36 +156,31 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
             key: _formKey,
             child: Column(
               children: [
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedClient,
+                DropdownButtonFormField<int>(
+                  initialValue: _selectedClientId,
                   decoration: const InputDecoration(labelText: 'Cliente'),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value == null) {
                       return 'Il cliente è obbligatorio';
                     }
 
                     return null;
                   },
-                  items: const [
-                    DropdownMenuItem(
-                      value: 'Mario Rossi',
-                      child: Text('Mario Rossi'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Luca Bianchi',
-                      child: Text('Luca Bianchi'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Alfa S.r.l.',
-                      child: Text('Alfa S.r.l.'),
-                    ),
-                  ],
+                  items: widget.clients.map((client) {
+                    final clientName =
+                        client.company != null && client.company!.isNotEmpty
+                        ? client.company!
+                        : '${client.name} ${client.surname}';
+
+                    return DropdownMenuItem<int>(
+                      value: client.id,
+                      child: Text(clientName),
+                    );
+                  }).toList(),
                   onChanged: (value) {
-                    if (value != null) {
-                      setState(() {
-                        _selectedClient = value;
-                      });
-                    }
+                    setState(() {
+                      _selectedClientId = value;
+                    });
                   },
                 ),
                 const SizedBox(height: 16),

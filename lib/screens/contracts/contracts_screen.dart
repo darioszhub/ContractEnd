@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'contract_form_dialog.dart';
 import '../../models/contract.dart';
 import '../../repositories/contract_repository.dart';
+import '../../models/client.dart';
+import '../../repositories/client_repository.dart';
 
 class ContractsScreen extends StatefulWidget {
   const ContractsScreen({super.key});
@@ -14,6 +16,10 @@ class ContractsScreen extends StatefulWidget {
 class _ContractsScreenState extends State<ContractsScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ContractRepository _repository = ContractRepository.instance;
+  final ClientRepository _clientRepository = ClientRepository.instance;
+
+  final List<Contract> _contracts = [];
+  final List<Client> _clients = [];
 
   String _searchText = '';
 
@@ -26,6 +32,25 @@ class _ContractsScreenState extends State<ContractsScreen> {
         _searchText = _searchController.text.toLowerCase();
       });
     });
+
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final contracts = await _repository.getAll();
+    final clients = await _clientRepository.getAll();
+
+    if (!mounted) return;
+
+    setState(() {
+      _contracts
+        ..clear()
+        ..addAll(contracts);
+
+      _clients
+        ..clear()
+        ..addAll(clients);
+    });
   }
 
   @override
@@ -36,18 +61,34 @@ class _ContractsScreenState extends State<ContractsScreen> {
 
   List<Contract> get _filteredContracts {
     if (_searchText.isEmpty) {
-      return _repository.contracts;
+      return _contracts;
     }
 
-    return _repository.contracts.where((contract) {
+    return _contracts.where((contract) {
       final searchData =
-          '${contract.client} '
+          '${_getClientName(contract.clientId)} '
                   '${contract.type} '
                   '${contract.number}'
               .toLowerCase();
 
       return searchData.contains(_searchText);
     }).toList();
+  }
+
+  String _getClientName(int clientId) {
+    final client = _clients
+        .where((client) => client.id == clientId)
+        .firstOrNull;
+
+    if (client == null) {
+      return 'Cliente non trovato';
+    }
+
+    if (client.company != null && client.company!.isNotEmpty) {
+      return client.company!;
+    }
+
+    return '${client.name} ${client.surname}';
   }
 
   int _daysUntilExpiration(String date) {
@@ -86,56 +127,85 @@ class _ContractsScreenState extends State<ContractsScreen> {
     return Colors.green;
   }
 
-  void _openContractForm({Contract? contract}) async {
+  Future<void> _openContractForm({Contract? contract}) async {
     final result = await showDialog<Contract>(
       context: context,
-      builder: (context) => ContractFormDialog(contract: contract),
+      builder: (context) =>
+          ContractFormDialog(contract: contract, clients: _clients),
     );
 
     if (result == null) return;
 
-    setState(() {
-      if (contract == null) {
-        _repository.add(result);
-      } else {
-        final index = _repository.contracts.indexOf(contract);
+    if (contract == null) {
+      final id = await _repository.insert(result);
+
+      if (!mounted) return;
+
+      setState(() {
+        _contracts.add(
+          Contract(
+            id: id,
+            clientId: result.clientId,
+            type: result.type,
+            number: result.number,
+            startDate: result.startDate,
+            expirationDate: result.expirationDate,
+            amount: result.amount,
+            frequency: result.frequency,
+            filePath: result.filePath,
+            notes: result.notes,
+            timestampINS: result.timestampINS,
+            timestampEDT: result.timestampEDT,
+          ),
+        );
+      });
+    } else {
+      await _repository.update(result);
+
+      if (!mounted) return;
+
+      setState(() {
+        final index = _contracts.indexOf(contract);
 
         if (index != -1) {
-          _repository.update(index, result);
+          _contracts[index] = result;
         }
-      }
-    });
+      });
+    }
   }
 
-  void _deleteContract(Contract contract) {
-    showDialog(
+  Future<void> _deleteContract(Contract contract) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: const Text('Elimina contratto'),
-          content: Text(
-            'Sei sicuro di voler eliminare '
-            '${contract.number}?',
-          ),
+          content: Text('Sei sicuro di voler eliminare ${contract.number}?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(dialogContext, false),
               child: const Text('Annulla'),
             ),
             FilledButton(
-              onPressed: () {
-                setState(() {
-                  _repository.delete(contract);
-                });
-
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(dialogContext, true),
               child: const Text('Elimina'),
             ),
           ],
         );
       },
     );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    await _repository.delete(contract);
+
+    if (!mounted) return;
+
+    setState(() {
+      _contracts.remove(contract);
+    });
   }
 
   @override
@@ -239,7 +309,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
                             cells: [
                               DataCell(
                                 Text(
-                                  contract.client,
+                                  _getClientName(contract.clientId),
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w500,
                                   ),

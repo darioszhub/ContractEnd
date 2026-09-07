@@ -31,7 +31,7 @@ class DatabaseHelper {
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 2,
+        version: 3,
         onCreate: (db, version) async {
           await db.execute('''
         CREATE TABLE clients (
@@ -53,6 +53,24 @@ class DatabaseHelper {
             await db.execute('ALTER TABLE clients ADD COLUMN vat TEXT');
             await db.execute('ALTER TABLE clients ADD COLUMN address TEXT');
             await db.execute('ALTER TABLE clients ADD COLUMN city TEXT');
+          }
+          if (oldVersion < 3) {
+            await db.execute('''
+                CREATE TABLE contracts (
+                  id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  clientId INTEGER NOT NULL,
+                  type TEXT NOT NULL,
+                  number TEXT NOT NULL,
+                  startDate TEXT NOT NULL,
+                  expirationDate TEXT NOT NULL,
+                  amount REAL,
+                  frequency TEXT NOT NULL,
+                  filePath TEXT,
+                  notes TEXT,
+                  TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                  TimestampEDT TEXT
+                )
+              ''');
           }
         },
       ),

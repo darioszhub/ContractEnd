@@ -1,23 +1,29 @@
 class Contract {
-  final String client;
+  final int? id;
+  final int clientId;
   final String type;
   final String number;
   final String startDate;
   final String expirationDate;
   final double? amount;
   final String frequency;
-  final String filePath;
-  final String notes;
+  final String? filePath;
+  final String? notes;
+  final DateTime timestampINS;
+  final DateTime? timestampEDT;
 
   Contract({
-    required this.client,
+    this.id,
+    required this.clientId,
     required this.type,
     required this.number,
     required this.startDate,
     required this.expirationDate,
     this.amount,
     required this.frequency,
-    required this.filePath,
-    required this.notes,
+    this.filePath,
+    this.notes,
+    required this.timestampINS,
+    this.timestampEDT,
   });
 }
