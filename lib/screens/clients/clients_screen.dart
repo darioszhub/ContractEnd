@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../models/client.dart';
 import '../../repositories/client_repository.dart';
 import 'client_form_dialog.dart';
+import '../../models/contract.dart';
+import '../../repositories/contract_repository.dart';
 
 class ClientsScreen extends StatefulWidget {
   const ClientsScreen({super.key});
@@ -15,6 +17,7 @@ class _ClientsScreenState extends State<ClientsScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   final List<Client> _clients = [];
+  final List<Contract> _contracts = [];
 
   String _searchText = '';
 
@@ -32,11 +35,16 @@ class _ClientsScreenState extends State<ClientsScreen> {
 
   Future<void> _loadClients() async {
     final clients = await ClientRepository.instance.getAll();
+    final contracts = await ContractRepository.instance.getAll();
 
     setState(() {
       _clients
         ..clear()
         ..addAll(clients);
+
+      _contracts
+        ..clear()
+        ..addAll(contracts);
     });
   }
 
@@ -153,6 +161,10 @@ class _ClientsScreenState extends State<ClientsScreen> {
     return '${client.name} ${client.surname}';
   }
 
+  int _getContractCount(int clientId) {
+    return _contracts.where((contract) => contract.clientId == clientId).length;
+  }
+
   @override
   Widget build(BuildContext context) {
     final clients = _filteredClients;
@@ -253,8 +265,9 @@ class _ClientsScreenState extends State<ClientsScreen> {
                               ),
                               DataCell(Text(client.phone ?? '')),
                               DataCell(Text(client.email ?? '')),
-                              //DataCell(Text(client['contracts'].toString())),
-                              const DataCell(Text('0')), // Da sostituire una volte che creo la tabella contracts
+                              DataCell(
+                                Text(_getContractCount(client.id!).toString()),
+                              ),
                               DataCell(
                                 Row(
                                   children: [
