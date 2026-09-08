@@ -7,7 +7,9 @@ import '../../models/client.dart';
 import '../../repositories/client_repository.dart';
 
 class ContractsScreen extends StatefulWidget {
-  const ContractsScreen({super.key});
+  final int? contractIdToOpen;
+
+  const ContractsScreen({super.key, this.contractIdToOpen});
 
   @override
   State<ContractsScreen> createState() => _ContractsScreenState();
@@ -51,6 +53,16 @@ class _ContractsScreenState extends State<ContractsScreen> {
         ..clear()
         ..addAll(clients);
     });
+
+    if (widget.contractIdToOpen != null) {
+      final contract = contracts
+          .where((contract) => contract.id == widget.contractIdToOpen)
+          .firstOrNull;
+
+      if (contract != null) {
+        await _openContractForm(contract: contract);
+      }
+    }
   }
 
   @override

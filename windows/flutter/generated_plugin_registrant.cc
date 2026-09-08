@@ -6,6 +6,9 @@
 
 #include "generated_plugin_registrant.h"
 
+#include <flutter_desktop_notifications/windows_notification_plugin_c_api.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
+  WindowsNotificationPluginCApiRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("WindowsNotificationPluginCApi"));
 }

@@ -8,6 +8,7 @@ import '../contracts/contracts_screen.dart';
 import '../../repositories/contract_repository.dart';
 import '../../repositories/client_repository.dart';
 import '../../models/client.dart';
+import '../../services/notification_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -18,6 +19,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int selectedIndex = 0;
+  int? _contractIdToOpen;
   final ContractRepository _repository = ContractRepository.instance;
   final ClientRepository _clientRepository = ClientRepository.instance;
 
@@ -27,6 +29,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+
+    NotificationService.instance.onOpenContract = (contractId) {
+      print('Dashboard: richiesta apertura contratto $contractId');
+
+      setState(() {
+        _contractIdToOpen = contractId;
+        selectedIndex = 2;
+      });
+    };
 
     _loadData();
   }
@@ -83,7 +94,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return const ClientsScreen();
 
       case 2:
-        return const ContractsScreen();
+        return ContractsScreen(contractIdToOpen: _contractIdToOpen);
 
       case 3:
         return const Center(
