@@ -31,7 +31,7 @@ class DatabaseHelper {
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 3,
+        version: 4,
         onCreate: (db, version) async {
           await db.execute('''
         CREATE TABLE clients (
@@ -71,6 +71,20 @@ class DatabaseHelper {
                   TimestampEDT TEXT
                 )
               ''');
+          }
+          if (oldVersion < 4) {
+            await db.execute('''
+              CREATE TABLE notifications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contractId INTEGER NOT NULL,
+                type TEXT NOT NULL,
+                title TEXT NOT NULL,
+                message TEXT NOT NULL,
+                daysBefore INTEGER,
+                isRead INTEGER NOT NULL DEFAULT 0,
+                TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+              )
+            ''');
           }
         },
       ),

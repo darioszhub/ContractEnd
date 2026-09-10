@@ -94,7 +94,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return const ClientsScreen();
 
       case 2:
-        return ContractsScreen(contractIdToOpen: _contractIdToOpen);
+        final contractIdToOpen = _contractIdToOpen;
+
+        _contractIdToOpen = null;
+
+        return ContractsScreen(contractIdToOpen: contractIdToOpen);
 
       case 3:
         return const Center(

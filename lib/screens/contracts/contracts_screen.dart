@@ -25,6 +25,8 @@ class _ContractsScreenState extends State<ContractsScreen> {
 
   String _searchText = '';
 
+  BuildContext? _contractDialogContext;
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +38,15 @@ class _ContractsScreenState extends State<ContractsScreen> {
     });
 
     _loadData();
+  }
+
+  @override
+  void didUpdateWidget(covariant ContractsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.contractIdToOpen != oldWidget.contractIdToOpen) {
+      _loadData();
+    }
   }
 
   Future<void> _loadData() async {
@@ -140,11 +151,21 @@ class _ContractsScreenState extends State<ContractsScreen> {
   }
 
   Future<void> _openContractForm({Contract? contract}) async {
+    if (_contractDialogContext != null) {
+      Navigator.pop(_contractDialogContext!);
+      _contractDialogContext = null;
+    }
+
     final result = await showDialog<Contract>(
       context: context,
-      builder: (context) =>
-          ContractFormDialog(contract: contract, clients: _clients),
+      builder: (dialogContext) {
+        _contractDialogContext = dialogContext;
+
+        return ContractFormDialog(contract: contract, clients: _clients);
+      },
     );
+
+    _contractDialogContext = null;
 
     if (result == null) return;
 
