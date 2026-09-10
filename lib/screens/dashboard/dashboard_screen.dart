@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import '../../widgets/app_sidebar.dart';
 import '../../widgets/stat_card.dart';
 import '../../models/contract.dart';
+import '../../models/client.dart';
 import '../clients/clients_screen.dart';
 import '../contracts/contracts_screen.dart';
+import '../notifications/notifications_screen.dart';
 import '../../repositories/contract_repository.dart';
 import '../../repositories/client_repository.dart';
-import '../../models/client.dart';
 import '../../services/notification_service.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -101,8 +102,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return ContractsScreen(contractIdToOpen: contractIdToOpen);
 
       case 3:
-        return const Center(
-          child: Text('Notifiche', style: TextStyle(fontSize: 28)),
+        return NotificationsScreen(
+          onOpenContract: (contractId) {
+            print('Notifiche: richiesta apertura contratto $contractId');
+
+            setState(() {
+              _contractIdToOpen = contractId;
+              selectedIndex = 2;
+            });
+          },
         );
 
       case 4:

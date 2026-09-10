@@ -48,6 +48,7 @@ class ClientRepository {
       'address': client.address,
       'city': client.city,
       'notes': client.notes,
+      'TimestampINS': DateTime.now().toIso8601String(),
     });
   }
 

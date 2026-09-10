@@ -43,6 +43,7 @@ class NotificationRepository {
         'message': notification.message,
         'daysBefore': notification.daysBefore,
         'isRead': notification.isRead ? 1 : 0,
+        'TimestampINS': DateTime.now().toIso8601String(),
       },
     );
   }

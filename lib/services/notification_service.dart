@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:flutter_desktop_notifications/flutter_desktop_notifications.dart';
 
 import '../models/contract.dart';
+import '../models/notification.dart';
 import '../repositories/client_repository.dart';
 import '../repositories/contract_repository.dart';
+import '../repositories/notification_repository.dart';
 
 class NotificationService {
   Function(int contractId)? onOpenContract;
@@ -52,16 +54,6 @@ class NotificationService {
     });
   }
 
-  Future<void> showTestNotification() async {
-    await _notifier.show(
-      NotificationMessage.fromPluginTemplate(
-        'test-notification',
-        'ContractEnd',
-        'Le notifiche di ContractEnd funzionano correttamente!',
-      ),
-    );
-  }
-
   Future<void> checkContractExpiration(Contract contract) async {
     final parts = contract.expirationDate.split('/');
 
@@ -107,6 +99,18 @@ class NotificationService {
         message =
             'Il contratto di $clientName con numero ${contract.number} è scaduto da ${daysUntilExpiration.abs()} giorni.';
       }
+
+      final notification = Notification(
+        contractId: contract.id!,
+        type: 'scadenza',
+        title: title,
+        message: message,
+        daysBefore: daysUntilExpiration,
+        isRead: false,
+        timestampINS: DateTime.now(),
+      );
+
+      await NotificationRepository.instance.insert(notification);
 
       await _notifier.show(
         NotificationMessage.fromPluginTemplate(

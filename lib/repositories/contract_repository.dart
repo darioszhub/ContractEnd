@@ -46,6 +46,7 @@ class ContractRepository {
       'frequency': contract.frequency,
       'filePath': contract.filePath,
       'notes': contract.notes,
+      'TimestampINS': DateTime.now().toIso8601String(),
     });
   }
 
