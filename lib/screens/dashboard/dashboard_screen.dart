@@ -7,6 +7,7 @@ import '../../models/client.dart';
 import '../clients/clients_screen.dart';
 import '../contracts/contracts_screen.dart';
 import '../notifications/notifications_screen.dart';
+import '../settings/settings_screen.dart';
 import '../../repositories/contract_repository.dart';
 import '../../repositories/client_repository.dart';
 import '../../repositories/notification_repository.dart';
@@ -128,9 +129,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
 
       case 4:
-        return const Center(
-          child: Text('Impostazioni', style: TextStyle(fontSize: 28)),
-        );
+        return const SettingsScreen();
 
       default:
         return _buildDashboard();

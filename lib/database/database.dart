@@ -31,7 +31,7 @@ class DatabaseHelper {
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 4,
+        version: 5,
         onCreate: (db, version) async {
           await db.execute('''
         CREATE TABLE clients (
@@ -85,6 +85,22 @@ class DatabaseHelper {
                 TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
               )
             ''');
+          }
+          if (oldVersion < 5) {
+            await db.execute('''
+              CREATE TABLE settings (
+                id INTEGER PRIMARY KEY,
+                notificationsEnabled INTEGER NOT NULL DEFAULT 1,
+                checkAtStartup INTEGER NOT NULL DEFAULT 1,
+                notify30Days INTEGER NOT NULL DEFAULT 1,
+                notify15Days INTEGER NOT NULL DEFAULT 1,
+                notify7Days INTEGER NOT NULL DEFAULT 1,
+                notify1Day INTEGER NOT NULL DEFAULT 1,
+                notifyExpired INTEGER NOT NULL DEFAULT 1
+              )
+            ''');
+
+            await db.insert('settings', {'id': 1});
           }
         },
       ),
