@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class AppSidebar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemSelected;
+  final int unreadNotifications;
 
   const AppSidebar({
     super.key,
     required this.selectedIndex,
     required this.onItemSelected,
+    required this.unreadNotifications,
   });
 
   @override
@@ -63,6 +65,7 @@ class AppSidebar extends StatelessWidget {
             icon: Icons.notifications_none,
             title: 'Notifiche',
             index: 3,
+            badge: unreadNotifications,
           ),
 
           const Spacer(),
@@ -85,6 +88,7 @@ class AppSidebar extends StatelessWidget {
     required IconData icon,
     required String title,
     required int index,
+    int? badge,
   }) {
     final selected = selectedIndex == index;
 
@@ -110,6 +114,22 @@ class AppSidebar extends StatelessWidget {
                 style: const TextStyle(color: Colors.white, fontSize: 15),
               ),
             ),
+            if (badge != null && badge > 0)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  badge.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
           ],
         ),
       ),

@@ -5,8 +5,13 @@ import '../../repositories/notification_repository.dart';
 
 class NotificationsScreen extends StatefulWidget {
   final Function(int contractId) onOpenContract;
+  final VoidCallback onNotificationsChanged;
 
-  const NotificationsScreen({super.key, required this.onOpenContract});
+  const NotificationsScreen({
+    super.key,
+    required this.onOpenContract,
+    required this.onNotificationsChanged,
+  });
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();
@@ -16,6 +21,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   final NotificationRepository _repository = NotificationRepository.instance;
 
   final List<app_notification.Notification> _notifications = [];
+
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -33,7 +40,93 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       _notifications
         ..clear()
         ..addAll(notifications);
+
+      _isLoading = false;
     });
+  }
+
+  Future<void> _markAllAsRead() async {
+    await _repository.markAllAsRead();
+
+    await _loadNotifications();
+
+    widget.onNotificationsChanged();
+  }
+
+  Future<void> _deleteNotification(
+    app_notification.Notification notification,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Elimina notifica'),
+          content: const Text('Sei sicuro di voler eliminare questa notifica?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Elimina'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    await _repository.delete(notification);
+
+    if (!mounted) return;
+
+    setState(() {
+      _notifications.remove(notification);
+    });
+
+    widget.onNotificationsChanged();
+  }
+
+  Future<void> _deleteAllNotifications() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Elimina tutte le notifiche'),
+          content: const Text(
+            'Sei sicuro di voler eliminare tutte le notifiche?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Elimina tutto'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    await _repository.deleteAll();
+
+    if (!mounted) return;
+
+    setState(() {
+      _notifications.clear();
+    });
+
+    widget.onNotificationsChanged();
   }
 
   String _formatDateTime(DateTime dateTime) {
@@ -54,9 +147,30 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Notifiche',
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              const Expanded(
+                child: Text(
+                  'Notifiche',
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                ),
+              ),
+
+              FilledButton.icon(
+                onPressed: _isLoading || _notifications.isEmpty
+                    ? () {}
+                    : _deleteAllNotifications,
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                icon: const Icon(Icons.delete_outline),
+                label: const Text('Elimina tutto'),
+              ),
+            ],
           ),
 
           const SizedBox(height: 8),
@@ -66,7 +180,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 20),
+
+          Row(
+            children: [
+              FilledButton.icon(
+                onPressed: _isLoading || _notifications.isEmpty
+                    ? () {}
+                    : _markAllAsRead,
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                icon: const Icon(Icons.done_all),
+                label: const Text('Segna tutto come letto'),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 15),
 
           Expanded(
             child: Container(
@@ -90,9 +225,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         final notification = _notifications[index];
 
                         return Material(
-                          color: Colors.transparent,
+                          color: notification.isRead
+                              ? Colors.transparent
+                              : Colors.blue.withValues(alpha: 0.05),
                           child: ListTile(
-                            onTap: () {
+                            onTap: () async {
+                              if (!notification.isRead) {
+                                await _repository.markAsRead(notification);
+                                widget.onNotificationsChanged();
+                              }
+
+                              if (!mounted) return;
+
                               widget.onOpenContract(notification.contractId);
                             },
                             leading: Icon(
@@ -103,20 +247,34 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             ),
                             title: Text(
                               notification.title,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
+                              style: TextStyle(
+                                fontWeight: notification.isRead
+                                    ? FontWeight.w500
+                                    : FontWeight.w700,
                               ),
                             ),
                             subtitle: Padding(
                               padding: const EdgeInsets.only(top: 6),
                               child: Text(notification.message),
                             ),
-                            trailing: Text(
-                              _formatDateTime(notification.timestampINS),
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontSize: 12,
-                              ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _formatDateTime(notification.timestampINS),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                IconButton(
+                                  tooltip: 'Elimina notifica',
+                                  icon: const Icon(Icons.delete_outline),
+                                  onPressed: () =>
+                                      _deleteNotification(notification),
+                                ),
+                              ],
                             ),
                           ),
                         );

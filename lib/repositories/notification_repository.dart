@@ -12,10 +12,7 @@ class NotificationRepository {
   Future<List<Notification>> getAll() async {
     final db = await _database.database;
 
-    final rows = await db.query(
-      'notifications',
-      orderBy: 'TimestampINS DESC',
-    );
+    final rows = await db.query('notifications', orderBy: 'TimestampINS DESC');
 
     return rows.map((row) {
       return Notification(
@@ -34,18 +31,15 @@ class NotificationRepository {
   Future<int> insert(Notification notification) async {
     final db = await _database.database;
 
-    return await db.insert(
-      'notifications',
-      {
-        'contractId': notification.contractId,
-        'type': notification.type,
-        'title': notification.title,
-        'message': notification.message,
-        'daysBefore': notification.daysBefore,
-        'isRead': notification.isRead ? 1 : 0,
-        'TimestampINS': DateTime.now().toIso8601String(),
-      },
-    );
+    return await db.insert('notifications', {
+      'contractId': notification.contractId,
+      'type': notification.type,
+      'title': notification.title,
+      'message': notification.message,
+      'daysBefore': notification.daysBefore,
+      'isRead': notification.isRead ? 1 : 0,
+      'TimestampINS': DateTime.now().toIso8601String(),
+    });
   }
 
   Future<int> markAsRead(Notification notification) async {
@@ -53,12 +47,16 @@ class NotificationRepository {
 
     return await db.update(
       'notifications',
-      {
-        'isRead': 1,
-      },
+      {'isRead': 1},
       where: 'id = ?',
       whereArgs: [notification.id],
     );
+  }
+
+  Future<int> markAllAsRead() async {
+    final db = await _database.database;
+
+    return await db.update('notifications', {'isRead': 1});
   }
 
   Future<int> delete(Notification notification) async {
@@ -69,5 +67,11 @@ class NotificationRepository {
       where: 'id = ?',
       whereArgs: [notification.id],
     );
+  }
+
+  Future<int> deleteAll() async {
+    final db = await _database.database;
+
+    return await db.delete('notifications');
   }
 }

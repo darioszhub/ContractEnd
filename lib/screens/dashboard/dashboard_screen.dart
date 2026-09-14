@@ -9,6 +9,7 @@ import '../contracts/contracts_screen.dart';
 import '../notifications/notifications_screen.dart';
 import '../../repositories/contract_repository.dart';
 import '../../repositories/client_repository.dart';
+import '../../repositories/notification_repository.dart';
 import '../../services/notification_service.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -23,9 +24,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int? _contractIdToOpen;
   final ContractRepository _repository = ContractRepository.instance;
   final ClientRepository _clientRepository = ClientRepository.instance;
+  final NotificationRepository _notificationRepository =
+      NotificationRepository.instance;
 
   final List<Contract> _contracts = [];
   final List<Client> _clients = [];
+
+  int _unreadNotifications = 0;
 
   @override
   void initState() {
@@ -46,6 +51,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _loadData() async {
     final contracts = await _repository.getAll();
     final clients = await _clientRepository.getAll();
+    final notifications = await _notificationRepository.getAll();
 
     if (!mounted) return;
 
@@ -57,6 +63,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _clients
         ..clear()
         ..addAll(clients);
+
+      _unreadNotifications = notifications
+          .where((notification) => !notification.isRead)
+          .length;
     });
   }
 
@@ -67,6 +77,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           AppSidebar(
             selectedIndex: selectedIndex,
+            unreadNotifications: _unreadNotifications,
             onItemSelected: (index) {
               setState(() {
                 selectedIndex = index;
@@ -103,6 +114,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       case 3:
         return NotificationsScreen(
+          onNotificationsChanged: () {
+            _loadData();
+          },
           onOpenContract: (contractId) {
             print('Notifiche: richiesta apertura contratto $contractId');
 
