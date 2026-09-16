@@ -74,4 +74,17 @@ class NotificationRepository {
 
     return await db.delete('notifications');
   }
+
+  Future<bool> existsForContractAndDays(int contractId, int daysBefore) async {
+    final db = await _database.database;
+
+    final rows = await db.query(
+      'notifications',
+      where: 'contractId = ? AND daysBefore = ?',
+      whereArgs: [contractId, daysBefore],
+      limit: 1,
+    );
+
+    return rows.isNotEmpty;
+  }
 }

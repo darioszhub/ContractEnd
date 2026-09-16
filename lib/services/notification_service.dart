@@ -7,9 +7,11 @@ import '../models/notification.dart';
 import '../repositories/client_repository.dart';
 import '../repositories/contract_repository.dart';
 import '../repositories/notification_repository.dart';
+import '../repositories/setting_repository.dart';
 
 class NotificationService {
   Function(int contractId)? onOpenContract;
+  Function()? onNotificationCreated;
 
   static final NotificationService instance = NotificationService._internal();
 
@@ -55,6 +57,13 @@ class NotificationService {
   }
 
   Future<void> checkContractExpiration(Contract contract) async {
+    final setting = await SettingRepository.instance.get();
+
+    if (!setting.notificationsEnabled) {
+      print('Notifiche disabilitate');
+      return;
+    }
+
     final parts = contract.expirationDate.split('/');
 
     final expirationDate = DateTime(
@@ -82,50 +91,88 @@ class NotificationService {
       'Contratto ${contract.number}: mancano $daysUntilExpiration giorni alla scadenza',
     );
 
-    if (daysUntilExpiration <= 30) {
-      String title;
-      String message;
+    int? notificationDays;
 
-      if (daysUntilExpiration > 0) {
-        title = '⚠️ Contratto in scadenza';
-        message =
-            'Il contratto di $clientName con numero ${contract.number} scade tra $daysUntilExpiration giorni.';
-      } else if (daysUntilExpiration == 0) {
-        title = '🔴 Contratto in scadenza';
-        message =
-            'Il contratto di $clientName con numero ${contract.number} scade oggi.';
-      } else {
-        title = '🔴 Contratto scaduto';
-        message =
-            'Il contratto di $clientName con numero ${contract.number} è scaduto da ${daysUntilExpiration.abs()} giorni.';
+    if (daysUntilExpiration < 0) {
+      if (setting.notifyExpired) {
+        notificationDays = -1;
+      }
+    } else if (daysUntilExpiration == 0) {
+      if (setting.notifyOnExpiration) {
+        notificationDays = 0;
+      }
+    } else {
+      if (daysUntilExpiration <= 30 && setting.notify30Days) {
+        notificationDays = 30;
       }
 
-      final notification = Notification(
-        contractId: contract.id!,
-        type: 'scadenza',
-        title: title,
-        message: message,
-        daysBefore: daysUntilExpiration,
-        isRead: false,
-        timestampINS: DateTime.now(),
-      );
+      if (daysUntilExpiration <= 15 && setting.notify15Days) {
+        notificationDays = 15;
+      }
 
-      await NotificationRepository.instance.insert(notification);
+      if (daysUntilExpiration <= 7 && setting.notify7Days) {
+        notificationDays = 7;
+      }
 
-      await _notifier.show(
-        NotificationMessage.fromPluginTemplate(
-          'contract-${contract.id}-30',
-          title,
-          message,
-          actions: [
-            NotificationAction(
-              content: 'Apri contratto',
-              arguments: 'action:open-contract:${contract.id}',
-            ),
-          ],
-        ),
-      );
+      if (daysUntilExpiration <= 1 && setting.notify1Day) {
+        notificationDays = 1;
+      }
     }
+
+    if (notificationDays == null) {
+      return;
+    }
+
+    final alreadyNotified = await NotificationRepository.instance
+        .existsForContractAndDays(contract.id!, notificationDays);
+
+    if (alreadyNotified) {
+      return;
+    }
+
+    String title;
+    String message;
+
+    if (daysUntilExpiration > 0) {
+      title = '⚠️ Contratto in scadenza';
+      message =
+          'Il contratto di $clientName con numero ${contract.number} scade tra $daysUntilExpiration giorni.';
+    } else if (daysUntilExpiration == 0) {
+      title = '🔴 Contratto in scadenza';
+      message =
+          'Il contratto di $clientName con numero ${contract.number} scade oggi.';
+    } else {
+      title = '🔴 Contratto scaduto';
+      message =
+          'Il contratto di $clientName con numero ${contract.number} è scaduto da ${daysUntilExpiration.abs()} giorni.';
+    }
+
+    final notification = Notification(
+      contractId: contract.id!,
+      type: 'scadenza',
+      title: title,
+      message: message,
+      daysBefore: notificationDays,
+      isRead: false,
+      timestampINS: DateTime.now(),
+    );
+
+    await NotificationRepository.instance.insert(notification);
+    onNotificationCreated?.call();
+
+    await _notifier.show(
+      NotificationMessage.fromPluginTemplate(
+        'contract-${contract.id}-$daysUntilExpiration',
+        title,
+        message,
+        actions: [
+          NotificationAction(
+            content: 'Apri contratto',
+            arguments: 'action:open-contract:${contract.id}',
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> checkAllContracts() async {

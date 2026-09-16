@@ -46,6 +46,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
     };
 
+    NotificationService.instance.onNotificationCreated = () {
+      _loadData();
+    };
+
     _loadData();
   }
 

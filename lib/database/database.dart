@@ -31,7 +31,7 @@ class DatabaseHelper {
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 5,
+        version: 6,
         onCreate: (db, version) async {
           await db.execute('''
         CREATE TABLE clients (
@@ -101,6 +101,11 @@ class DatabaseHelper {
             ''');
 
             await db.insert('settings', {'id': 1});
+          }
+          if (oldVersion < 6) {
+            await db.execute(
+              'ALTER TABLE settings ADD COLUMN notifyOnExpiration INTEGER NOT NULL DEFAULT 1',
+            );
           }
         },
       ),

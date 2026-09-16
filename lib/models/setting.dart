@@ -5,6 +5,7 @@ class Setting {
   final bool notify15Days;
   final bool notify7Days;
   final bool notify1Day;
+  final bool notifyOnExpiration;
   final bool notifyExpired;
 
   Setting({
@@ -14,6 +15,7 @@ class Setting {
     required this.notify15Days,
     required this.notify7Days,
     required this.notify1Day,
+    required this.notifyOnExpiration,
     required this.notifyExpired,
   });
 }
