@@ -1,8 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 import '../../models/contract.dart';
 import '../../models/client.dart';
+
+class ContractFormResult {
+  final Contract contract;
+  final String? oldFilePath;
+
+  ContractFormResult({required this.contract, this.oldFilePath});
+}
 
 class ContractFormDialog extends StatefulWidget {
   final Contract? contract;
@@ -26,6 +37,8 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
   int? _selectedClientId;
   String _selectedFrequency = 'Mensile';
   String? _filePath;
+  String? _oldFilePath;
+  String? _newFilePath;
 
   bool get _isEditing => widget.contract != null;
 
@@ -60,7 +73,7 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
     }
   }
 
-  void _save() {
+  Future<void> _save() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -80,7 +93,10 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
       timestampEDT: widget.contract?.timestampEDT,
     );
 
-    Navigator.pop(context, contract);
+    Navigator.pop(
+      context,
+      ContractFormResult(contract: contract, oldFilePath: _oldFilePath),
+    );
   }
 
   Future<void> _selectDate(TextEditingController controller) async {
@@ -108,9 +124,58 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
 
     if (result.isEmpty) return;
 
+    final selectedFile = File(result.single.path!);
+
+    final appDirectory = await getApplicationSupportDirectory();
+
+    final documentsDirectory = Directory(
+      path.join(appDirectory.path, 'documents'),
+    );
+
+    if (!await documentsDirectory.exists()) {
+      await documentsDirectory.create(recursive: true);
+    }
+
+    final originalName = path.basenameWithoutExtension(selectedFile.path);
+    final extension = path.extension(selectedFile.path);
+
+    var fileName = '$originalName$extension';
+    var destinationPath = path.join(documentsDirectory.path, fileName);
+
+    var counter = 1;
+
+    while (await File(destinationPath).exists()) {
+      fileName = '$originalName ($counter)$extension';
+
+      destinationPath = path.join(documentsDirectory.path, fileName);
+
+      counter++;
+    }
+
+    final copiedFile = await selectedFile.copy(destinationPath);
+
+    if (_filePath != null && _filePath != copiedFile.path) {
+      _oldFilePath = _filePath;
+    }
+
     setState(() {
-      _filePath = result.single.path;
+      _filePath = copiedFile.path;
+      _newFilePath = copiedFile.path;
     });
+  }
+
+  Future<void> _openPdf() async {
+    if (_filePath == null || _filePath!.isEmpty) {
+      return;
+    }
+
+    final file = File(_filePath!);
+
+    if (!await file.exists()) {
+      return;
+    }
+
+    await Process.start('explorer.exe', [_filePath!]);
   }
 
   String? _getFileName() {
@@ -122,6 +187,10 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
   }
 
   void _removePdf() {
+    if (_filePath != null) {
+      _oldFilePath = _filePath;
+    }
+
     setState(() {
       _filePath = null;
     });
@@ -344,12 +413,18 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
                             ),
                           ),
 
-                          if (_getFileName() != null)
+                          if (_getFileName() != null) ...[
+                            IconButton(
+                              tooltip: 'Apri PDF',
+                              onPressed: _openPdf,
+                              icon: const Icon(Icons.picture_as_pdf_outlined),
+                            ),
                             IconButton(
                               tooltip: 'Rimuovi documento',
                               onPressed: _removePdf,
                               icon: const Icon(Icons.close),
                             ),
+                          ],
                         ],
                       ),
                     ],
@@ -373,7 +448,17 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () async {
+            if (_newFilePath != null) {
+              final newFile = File(_newFilePath!);
+
+              if (await newFile.exists()) {
+                await newFile.delete();
+              }
+            }
+
+            Navigator.pop(context);
+          },
           child: const Text('Annulla'),
         ),
         FilledButton(

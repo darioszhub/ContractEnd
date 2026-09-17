@@ -25,53 +25,121 @@ class DatabaseHelper {
     databaseFactory = databaseFactoryFfi;
 
     final directory = await getApplicationSupportDirectory();
-
     final path = join(directory.path, 'contractend.db');
 
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
         version: 6,
+
         onCreate: (db, version) async {
+          // CLIENTS
           await db.execute('''
-        CREATE TABLE clients (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT NOT NULL,
-          surname TEXT NOT NULL,
-          company TEXT,
-          phone TEXT,
-          email TEXT,
-          notes TEXT,
-          TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          TimestampEDT TEXT
-        )
-      ''');
+            CREATE TABLE clients (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              name TEXT NOT NULL,
+              surname TEXT NOT NULL,
+              company TEXT,
+              phone TEXT,
+              email TEXT,
+              notes TEXT,
+              taxCode TEXT,
+              vat TEXT,
+              address TEXT,
+              city TEXT,
+              TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              TimestampEDT TEXT
+            )
+          ''');
+
+          // CONTRACTS
+          await db.execute('''
+            CREATE TABLE contracts (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              clientId INTEGER NOT NULL,
+              type TEXT NOT NULL,
+              number TEXT NOT NULL,
+              startDate TEXT NOT NULL,
+              expirationDate TEXT NOT NULL,
+              amount REAL,
+              frequency TEXT NOT NULL,
+              filePath TEXT,
+              notes TEXT,
+              TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+              TimestampEDT TEXT
+            )
+          ''');
+
+          // NOTIFICATIONS
+          await db.execute('''
+            CREATE TABLE notifications (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              contractId INTEGER NOT NULL,
+              type TEXT NOT NULL,
+              title TEXT NOT NULL,
+              message TEXT NOT NULL,
+              daysBefore INTEGER,
+              isRead INTEGER NOT NULL DEFAULT 0,
+              TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+          ''');
+
+          // SETTINGS
+          await db.execute('''
+            CREATE TABLE settings (
+              id INTEGER PRIMARY KEY,
+              notificationsEnabled INTEGER NOT NULL DEFAULT 1,
+              checkAtStartup INTEGER NOT NULL DEFAULT 1,
+              notify30Days INTEGER NOT NULL DEFAULT 1,
+              notify15Days INTEGER NOT NULL DEFAULT 1,
+              notify7Days INTEGER NOT NULL DEFAULT 1,
+              notify1Day INTEGER NOT NULL DEFAULT 1,
+              notifyExpired INTEGER NOT NULL DEFAULT 1,
+              notifyOnExpiration INTEGER NOT NULL DEFAULT 1
+            )
+          ''');
+
+          await db.insert('settings', {'id': 1});
         },
+
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
-            await db.execute('ALTER TABLE clients ADD COLUMN taxCode TEXT');
-            await db.execute('ALTER TABLE clients ADD COLUMN vat TEXT');
-            await db.execute('ALTER TABLE clients ADD COLUMN address TEXT');
-            await db.execute('ALTER TABLE clients ADD COLUMN city TEXT');
+            await db.execute(
+              'ALTER TABLE clients ADD COLUMN taxCode TEXT',
+            );
+
+            await db.execute(
+              'ALTER TABLE clients ADD COLUMN vat TEXT',
+            );
+
+            await db.execute(
+              'ALTER TABLE clients ADD COLUMN address TEXT',
+            );
+
+            await db.execute(
+              'ALTER TABLE clients ADD COLUMN city TEXT',
+            );
           }
+
           if (oldVersion < 3) {
             await db.execute('''
-                CREATE TABLE contracts (
-                  id INTEGER PRIMARY KEY AUTOINCREMENT,
-                  clientId INTEGER NOT NULL,
-                  type TEXT NOT NULL,
-                  number TEXT NOT NULL,
-                  startDate TEXT NOT NULL,
-                  expirationDate TEXT NOT NULL,
-                  amount REAL,
-                  frequency TEXT NOT NULL,
-                  filePath TEXT,
-                  notes TEXT,
-                  TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                  TimestampEDT TEXT
-                )
-              ''');
+              CREATE TABLE contracts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                clientId INTEGER NOT NULL,
+                type TEXT NOT NULL,
+                number TEXT NOT NULL,
+                startDate TEXT NOT NULL,
+                expirationDate TEXT NOT NULL,
+                amount REAL,
+                frequency TEXT NOT NULL,
+                filePath TEXT,
+                notes TEXT,
+                TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                TimestampEDT TEXT
+              )
+            ''');
           }
+
           if (oldVersion < 4) {
             await db.execute('''
               CREATE TABLE notifications (
@@ -86,6 +154,7 @@ class DatabaseHelper {
               )
             ''');
           }
+
           if (oldVersion < 5) {
             await db.execute('''
               CREATE TABLE settings (
@@ -102,9 +171,11 @@ class DatabaseHelper {
 
             await db.insert('settings', {'id': 1});
           }
+
           if (oldVersion < 6) {
             await db.execute(
-              'ALTER TABLE settings ADD COLUMN notifyOnExpiration INTEGER NOT NULL DEFAULT 1',
+              'ALTER TABLE settings ADD COLUMN notifyOnExpiration '
+              'INTEGER NOT NULL DEFAULT 1',
             );
           }
         },

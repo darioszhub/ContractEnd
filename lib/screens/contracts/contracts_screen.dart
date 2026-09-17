@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'contract_form_dialog.dart';
@@ -156,7 +158,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
       _contractDialogContext = null;
     }
 
-    final result = await showDialog<Contract>(
+    final result = await showDialog<ContractFormResult>(
       context: context,
       builder: (dialogContext) {
         _contractDialogContext = dialogContext;
@@ -169,8 +171,10 @@ class _ContractsScreenState extends State<ContractsScreen> {
 
     if (result == null) return;
 
+    final updatedContract = result.contract;
+
     if (contract == null) {
-      final id = await _repository.insert(result);
+      final id = await _repository.insert(updatedContract);
 
       if (!mounted) return;
 
@@ -178,22 +182,30 @@ class _ContractsScreenState extends State<ContractsScreen> {
         _contracts.add(
           Contract(
             id: id,
-            clientId: result.clientId,
-            type: result.type,
-            number: result.number,
-            startDate: result.startDate,
-            expirationDate: result.expirationDate,
-            amount: result.amount,
-            frequency: result.frequency,
-            filePath: result.filePath,
-            notes: result.notes,
-            timestampINS: result.timestampINS,
-            timestampEDT: result.timestampEDT,
+            clientId: updatedContract.clientId,
+            type: updatedContract.type,
+            number: updatedContract.number,
+            startDate: updatedContract.startDate,
+            expirationDate: updatedContract.expirationDate,
+            amount: updatedContract.amount,
+            frequency: updatedContract.frequency,
+            filePath: updatedContract.filePath,
+            notes: updatedContract.notes,
+            timestampINS: updatedContract.timestampINS,
+            timestampEDT: updatedContract.timestampEDT,
           ),
         );
       });
     } else {
-      await _repository.update(result);
+      await _repository.update(updatedContract);
+
+      if (result.oldFilePath != null) {
+        final oldFile = File(result.oldFilePath!);
+
+        if (await oldFile.exists()) {
+          await oldFile.delete();
+        }
+      }
 
       if (!mounted) return;
 
@@ -201,10 +213,24 @@ class _ContractsScreenState extends State<ContractsScreen> {
         final index = _contracts.indexOf(contract);
 
         if (index != -1) {
-          _contracts[index] = result;
+          _contracts[index] = updatedContract;
         }
       });
     }
+  }
+
+  Future<void> _openPdf(Contract contract) async {
+    if (contract.filePath == null || contract.filePath!.isEmpty) {
+      return;
+    }
+
+    final file = File(contract.filePath!);
+
+    if (!await file.exists()) {
+      return;
+    }
+
+    await Process.start('explorer.exe', [contract.filePath!]);
   }
 
   Future<void> _deleteContract(Contract contract) async {
@@ -233,6 +259,14 @@ class _ContractsScreenState extends State<ContractsScreen> {
     }
 
     await _repository.delete(contract);
+
+    if (contract.filePath != null && contract.filePath!.isNotEmpty) {
+      final file = File(contract.filePath!);
+
+      if (await file.exists()) {
+        await file.delete();
+      }
+    }
 
     if (!mounted) return;
 
@@ -386,6 +420,17 @@ class _ContractsScreenState extends State<ContractsScreen> {
                                         _openContractForm(contract: contract);
                                       },
                                       icon: const Icon(Icons.edit_outlined),
+                                    ),
+                                    IconButton(
+                                      tooltip: 'Apri PDF',
+                                      onPressed: contract.filePath != null
+                                          ? () {
+                                              _openPdf(contract);
+                                            }
+                                          : null,
+                                      icon: const Icon(
+                                        Icons.picture_as_pdf_outlined,
+                                      ),
                                     ),
                                     IconButton(
                                       tooltip: 'Elimina',
