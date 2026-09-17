@@ -30,7 +30,7 @@ class DatabaseHelper {
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 6,
+        version: 7,
 
         onCreate: (db, version) async {
           // CLIENTS
@@ -63,6 +63,8 @@ class DatabaseHelper {
               expirationDate TEXT NOT NULL,
               amount REAL,
               frequency TEXT NOT NULL,
+              agent TEXT,
+              codagent TEXT,
               filePath TEXT,
               notes TEXT,
               TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -104,21 +106,13 @@ class DatabaseHelper {
 
         onUpgrade: (db, oldVersion, newVersion) async {
           if (oldVersion < 2) {
-            await db.execute(
-              'ALTER TABLE clients ADD COLUMN taxCode TEXT',
-            );
+            await db.execute('ALTER TABLE clients ADD COLUMN taxCode TEXT');
 
-            await db.execute(
-              'ALTER TABLE clients ADD COLUMN vat TEXT',
-            );
+            await db.execute('ALTER TABLE clients ADD COLUMN vat TEXT');
 
-            await db.execute(
-              'ALTER TABLE clients ADD COLUMN address TEXT',
-            );
+            await db.execute('ALTER TABLE clients ADD COLUMN address TEXT');
 
-            await db.execute(
-              'ALTER TABLE clients ADD COLUMN city TEXT',
-            );
+            await db.execute('ALTER TABLE clients ADD COLUMN city TEXT');
           }
 
           if (oldVersion < 3) {
@@ -177,6 +171,12 @@ class DatabaseHelper {
               'ALTER TABLE settings ADD COLUMN notifyOnExpiration '
               'INTEGER NOT NULL DEFAULT 1',
             );
+          }
+
+          if (oldVersion < 7) {
+            await db.execute('ALTER TABLE contracts ADD COLUMN agent TEXT');
+
+            await db.execute('ALTER TABLE contracts ADD COLUMN codagent TEXT');
           }
         },
       ),

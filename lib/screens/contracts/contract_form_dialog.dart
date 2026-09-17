@@ -32,6 +32,8 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
   late final TextEditingController _expirationDateController;
   late final TextEditingController _amountController;
   late final TextEditingController _notesController;
+  late final TextEditingController _agentController;
+  late final TextEditingController _codAgentController;
   final _formKey = GlobalKey<FormState>();
 
   int? _selectedClientId;
@@ -67,6 +69,10 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
 
     _notesController = TextEditingController(text: contract?.notes ?? '');
 
+    _agentController = TextEditingController(text: contract?.agent ?? '');
+
+    _codAgentController = TextEditingController(text: contract?.codagent ?? '');
+
     if (contract != null) {
       _selectedClientId = contract.clientId;
       _selectedFrequency = contract.frequency;
@@ -87,6 +93,8 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
       expirationDate: _expirationDateController.text,
       amount: double.tryParse(_amountController.text.replaceAll(',', '.')),
       frequency: _selectedFrequency,
+      agent: _agentController.text.trim(),
+      codagent: _codAgentController.text.trim(),
       filePath: _filePath,
       notes: _notesController.text.trim(),
       timestampINS: widget.contract?.timestampINS ?? DateTime.now(),
@@ -379,6 +387,19 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
                   },
                 ),
                 const SizedBox(height: 16),
+                TextFormField(
+                  controller: _agentController,
+                  decoration: const InputDecoration(labelText: 'Agente'),
+                ),
+
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _codAgentController,
+                  decoration: const InputDecoration(labelText: 'Codice agente'),
+                ),
+
+                const SizedBox(height: 16),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Column(
@@ -482,6 +503,8 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
     _expirationDateController.dispose();
     _amountController.dispose();
     _notesController.dispose();
+    _agentController.dispose();
+    _codAgentController.dispose();
 
     super.dispose();
   }

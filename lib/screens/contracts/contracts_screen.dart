@@ -189,6 +189,8 @@ class _ContractsScreenState extends State<ContractsScreen> {
             expirationDate: updatedContract.expirationDate,
             amount: updatedContract.amount,
             frequency: updatedContract.frequency,
+            agent: updatedContract.agent,
+            codagent: updatedContract.codagent,
             filePath: updatedContract.filePath,
             notes: updatedContract.notes,
             timestampINS: updatedContract.timestampINS,

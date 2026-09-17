@@ -7,6 +7,8 @@ class Contract {
   final String expirationDate;
   final double? amount;
   final String frequency;
+  final String? agent;
+  final String? codagent;
   final String? filePath;
   final String? notes;
   final DateTime timestampINS;
@@ -21,6 +23,8 @@ class Contract {
     required this.expirationDate,
     this.amount,
     required this.frequency,
+    this.agent,
+    this.codagent,
     this.filePath,
     this.notes,
     required this.timestampINS,
