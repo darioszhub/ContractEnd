@@ -23,6 +23,8 @@ class SettingRepository {
     return Setting(
       notificationsEnabled: (row['notificationsEnabled'] as int) == 1,
       checkAtStartup: (row['checkAtStartup'] as int) == 1,
+      notify90Days: (row['notify90Days'] as int) == 1,
+      notify60Days: (row['notify60Days'] as int) == 1,
       notify30Days: (row['notify30Days'] as int) == 1,
       notify15Days: (row['notify15Days'] as int) == 1,
       notify7Days: (row['notify7Days'] as int) == 1,
@@ -40,6 +42,8 @@ class SettingRepository {
       {
         'notificationsEnabled': setting.notificationsEnabled ? 1 : 0,
         'checkAtStartup': setting.checkAtStartup ? 1 : 0,
+        'notify90Days': setting.notify90Days ? 1 : 0,
+        'notify60Days': setting.notify60Days ? 1 : 0,
         'notify30Days': setting.notify30Days ? 1 : 0,
         'notify15Days': setting.notify15Days ? 1 : 0,
         'notify7Days': setting.notify7Days ? 1 : 0,

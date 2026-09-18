@@ -155,7 +155,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return 'Scaduto';
     }
 
-    if (days <= 30) {
+    if (days <= 90) {
       return 'In scadenza';
     }
 
@@ -167,7 +167,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return Colors.red;
     }
 
-    if (days <= 30) {
+    if (days <= 90) {
       return Colors.orange;
     }
 

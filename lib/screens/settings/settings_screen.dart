@@ -116,6 +116,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               final updatedSetting = Setting(
                 notificationsEnabled: value,
                 checkAtStartup: setting.checkAtStartup,
+                notify90Days: setting.notify90Days,
+                notify60Days: setting.notify60Days,
                 notify30Days: setting.notify30Days,
                 notify15Days: setting.notify15Days,
                 notify7Days: setting.notify7Days,
@@ -152,6 +154,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final updatedSetting = Setting(
                       notificationsEnabled: setting.notificationsEnabled,
                       checkAtStartup: value,
+                      notify90Days: setting.notify90Days,
+                      notify60Days: setting.notify60Days,
                       notify30Days: setting.notify30Days,
                       notify15Days: setting.notify15Days,
                       notify7Days: setting.notify7Days,
@@ -180,6 +184,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           CheckboxListTile(
             contentPadding: EdgeInsets.zero,
+            title: const Text('90 giorni prima'),
+            value: setting.notify90Days,
+            onChanged: setting.notificationsEnabled
+                ? (value) async {
+                    if (value == null) return;
+
+                    final updatedSetting = Setting(
+                      notificationsEnabled: setting.notificationsEnabled,
+                      checkAtStartup: setting.checkAtStartup,
+                      notify90Days: value,
+                      notify60Days: setting.notify60Days,
+                      notify30Days: setting.notify30Days,
+                      notify15Days: setting.notify15Days,
+                      notify7Days: setting.notify7Days,
+                      notify1Day: setting.notify1Day,
+                      notifyOnExpiration: setting.notifyOnExpiration,
+                      notifyExpired: setting.notifyExpired,
+                    );
+
+                    await _repository.update(updatedSetting);
+
+                    if (!mounted) return;
+
+                    setState(() {
+                      _setting = updatedSetting;
+                    });
+                  }
+                : null,
+          ),
+
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('60 giorni prima'),
+            value: setting.notify60Days,
+            onChanged: setting.notificationsEnabled
+                ? (value) async {
+                    if (value == null) return;
+
+                    final updatedSetting = Setting(
+                      notificationsEnabled: setting.notificationsEnabled,
+                      checkAtStartup: setting.checkAtStartup,
+                      notify90Days: setting.notify90Days,
+                      notify60Days: value,
+                      notify30Days: setting.notify30Days,
+                      notify15Days: setting.notify15Days,
+                      notify7Days: setting.notify7Days,
+                      notify1Day: setting.notify1Day,
+                      notifyOnExpiration: setting.notifyOnExpiration,
+                      notifyExpired: setting.notifyExpired,
+                    );
+
+                    await _repository.update(updatedSetting);
+
+                    if (!mounted) return;
+
+                    setState(() {
+                      _setting = updatedSetting;
+                    });
+                  }
+                : null,
+          ),
+
+          CheckboxListTile(
+            contentPadding: EdgeInsets.zero,
             title: const Text('30 giorni prima'),
             value: setting.notify30Days,
             onChanged: setting.notificationsEnabled
@@ -189,6 +257,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final updatedSetting = Setting(
                       notificationsEnabled: setting.notificationsEnabled,
                       checkAtStartup: setting.checkAtStartup,
+                      notify90Days: setting.notify90Days,
+                      notify60Days: setting.notify60Days,
                       notify30Days: value,
                       notify15Days: setting.notify15Days,
                       notify7Days: setting.notify7Days,
@@ -219,6 +289,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final updatedSetting = Setting(
                       notificationsEnabled: setting.notificationsEnabled,
                       checkAtStartup: setting.checkAtStartup,
+                      notify90Days: setting.notify90Days,
+                      notify60Days: setting.notify60Days,
                       notify30Days: setting.notify30Days,
                       notify15Days: value,
                       notify7Days: setting.notify7Days,
@@ -249,6 +321,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final updatedSetting = Setting(
                       notificationsEnabled: setting.notificationsEnabled,
                       checkAtStartup: setting.checkAtStartup,
+                      notify90Days: setting.notify90Days,
+                      notify60Days: setting.notify60Days,
                       notify30Days: setting.notify30Days,
                       notify15Days: setting.notify15Days,
                       notify7Days: value,
@@ -279,6 +353,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final updatedSetting = Setting(
                       notificationsEnabled: setting.notificationsEnabled,
                       checkAtStartup: setting.checkAtStartup,
+                      notify90Days: setting.notify90Days,
+                      notify60Days: setting.notify60Days,
                       notify30Days: setting.notify30Days,
                       notify15Days: setting.notify15Days,
                       notify7Days: setting.notify7Days,
@@ -309,6 +385,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final updatedSetting = Setting(
                       notificationsEnabled: setting.notificationsEnabled,
                       checkAtStartup: setting.checkAtStartup,
+                      notify90Days: setting.notify90Days,
+                      notify60Days: setting.notify60Days,
                       notify30Days: setting.notify30Days,
                       notify15Days: setting.notify15Days,
                       notify7Days: setting.notify7Days,
@@ -346,6 +424,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final updatedSetting = Setting(
                       notificationsEnabled: setting.notificationsEnabled,
                       checkAtStartup: setting.checkAtStartup,
+                      notify90Days: setting.notify90Days,
+                      notify60Days: setting.notify60Days,
                       notify30Days: setting.notify30Days,
                       notify15Days: setting.notify15Days,
                       notify7Days: setting.notify7Days,

@@ -133,7 +133,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
       return 'Scaduto';
     }
 
-    if (days <= 30) {
+    if (days <= 90) {
       return 'In scadenza';
     }
 
@@ -145,7 +145,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
       return Colors.red;
     }
 
-    if (days <= 30) {
+    if (days <= 90) {
       return Colors.orange;
     }
 

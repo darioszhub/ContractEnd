@@ -1,6 +1,8 @@
 class Setting {
   final bool notificationsEnabled;
   final bool checkAtStartup;
+  final bool notify90Days;
+  final bool notify60Days;
   final bool notify30Days;
   final bool notify15Days;
   final bool notify7Days;
@@ -11,6 +13,8 @@ class Setting {
   Setting({
     required this.notificationsEnabled,
     required this.checkAtStartup,
+    required this.notify90Days,
+    required this.notify60Days,
     required this.notify30Days,
     required this.notify15Days,
     required this.notify7Days,

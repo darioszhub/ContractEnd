@@ -30,7 +30,7 @@ class DatabaseHelper {
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 7,
+        version: 8,
 
         onCreate: (db, version) async {
           // CLIENTS
@@ -92,6 +92,8 @@ class DatabaseHelper {
               id INTEGER PRIMARY KEY,
               notificationsEnabled INTEGER NOT NULL DEFAULT 1,
               checkAtStartup INTEGER NOT NULL DEFAULT 1,
+              notify90Days INTEGER NOT NULL DEFAULT 1,
+              notify60Days INTEGER NOT NULL DEFAULT 1,
               notify30Days INTEGER NOT NULL DEFAULT 1,
               notify15Days INTEGER NOT NULL DEFAULT 1,
               notify7Days INTEGER NOT NULL DEFAULT 1,
@@ -175,8 +177,19 @@ class DatabaseHelper {
 
           if (oldVersion < 7) {
             await db.execute('ALTER TABLE contracts ADD COLUMN agent TEXT');
-
             await db.execute('ALTER TABLE contracts ADD COLUMN codagent TEXT');
+          }
+
+          if (oldVersion < 8) {
+            await db.execute(
+              'ALTER TABLE settings ADD COLUMN notify90Days '
+              'INTEGER NOT NULL DEFAULT 1',
+            );
+
+            await db.execute(
+              'ALTER TABLE settings ADD COLUMN notify60Days '
+              'INTEGER NOT NULL DEFAULT 1',
+            );
           }
         },
       ),

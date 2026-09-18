@@ -102,6 +102,14 @@ class NotificationService {
         notificationDays = 0;
       }
     } else {
+      if (daysUntilExpiration <= 90 && setting.notify90Days) {
+        notificationDays = 90;
+      }
+
+      if (daysUntilExpiration <= 60 && setting.notify60Days) {
+        notificationDays = 60;
+      }
+
       if (daysUntilExpiration <= 30 && setting.notify30Days) {
         notificationDays = 30;
       }
