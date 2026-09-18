@@ -36,7 +36,7 @@ class NotificationService {
     await _notifier.requestPermission();
 
     _notifier.setCallback((details) {
-      print('Azione notifica ricevuta: ${details.arguments}');
+      //print('Azione notifica ricevuta: ${details.arguments}');
 
       final arguments = details.arguments;
 
@@ -60,7 +60,7 @@ class NotificationService {
     final setting = await SettingRepository.instance.get();
 
     if (!setting.notificationsEnabled) {
-      print('Notifiche disabilitate');
+      //print('Notifiche disabilitate');
       return;
     }
 
@@ -87,9 +87,9 @@ class NotificationService {
         ? client.company!
         : '${client.name} ${client.surname}';
 
-    print(
+    /* print(
       'Contratto ${contract.number}: mancano $daysUntilExpiration giorni alla scadenza',
-    );
+    ); */
 
     int? notificationDays;
 
@@ -178,7 +178,7 @@ class NotificationService {
   Future<void> checkAllContracts() async {
     final contracts = await ContractRepository.instance.getAll();
 
-    print('Contratti trovati: ${contracts.length}');
+    //print('Contratti trovati: ${contracts.length}');
 
     for (final contract in contracts) {
       await checkContractExpiration(contract);

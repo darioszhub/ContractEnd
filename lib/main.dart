@@ -19,7 +19,7 @@ Future<void> main() async {
   }
 
   Timer.periodic(const Duration(hours: 1), (_) async {
-    print('Controllo periodico delle scadenze');
+    //print('Controllo periodico delle scadenze');
     final currentSetting = await SettingRepository.instance.get();
 
     if (!currentSetting.notificationsEnabled) {

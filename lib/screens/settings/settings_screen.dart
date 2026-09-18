@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/setting.dart';
 import '../../repositories/setting_repository.dart';
+import '../../services/secure_storage_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,6 +17,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Setting? _setting;
   bool _isLoading = true;
 
+  final TextEditingController _geminiApiKeyController = TextEditingController();
+
+  bool _geminiApiKeyVisible = false;
+  bool _isSavingGeminiApiKey = false;
+
   @override
   void initState() {
     super.initState();
@@ -25,13 +31,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadSettings() async {
     final setting = await _repository.get();
+    final geminiApiKey = await SecureStorageService.getGeminiApiKey();
 
     if (!mounted) return;
+
+    _geminiApiKeyController.text = geminiApiKey ?? '';
 
     setState(() {
       _setting = setting;
       _isLoading = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _geminiApiKeyController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -347,6 +363,125 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     });
                   }
                 : null,
+          ),
+
+          const SizedBox(height: 30),
+
+          const Text(
+            '🤖 Gemini',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+
+          const SizedBox(height: 15),
+
+          const Text(
+            'Configura la API Key di Gemini per analizzare automaticamente i contratti.',
+            style: TextStyle(color: Colors.grey),
+          ),
+
+          const SizedBox(height: 15),
+
+          TextField(
+            controller: _geminiApiKeyController,
+            obscureText: !_geminiApiKeyVisible,
+            decoration: InputDecoration(
+              labelText: 'API Key',
+              hintText: 'Inserisci la API Key di Gemini',
+              border: const OutlineInputBorder(),
+              suffixIcon: IconButton(
+                tooltip: _geminiApiKeyVisible
+                    ? 'Nascondi API Key'
+                    : 'Mostra API Key',
+                icon: Icon(
+                  _geminiApiKeyVisible
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _geminiApiKeyVisible = !_geminiApiKeyVisible;
+                  });
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 15),
+
+          Row(
+            children: [
+              FilledButton.icon(
+                onPressed: _isSavingGeminiApiKey
+                    ? () {}
+                    : () async {
+                        setState(() {
+                          _isSavingGeminiApiKey = true;
+                        });
+
+                        await SecureStorageService.saveGeminiApiKey(
+                          _geminiApiKeyController.text.trim(),
+                        );
+
+                        if (!mounted) return;
+
+                        setState(() {
+                          _isSavingGeminiApiKey = false;
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('API Key Gemini salvata.'),
+                          ),
+                        );
+                      },
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                icon: _isSavingGeminiApiKey
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.save),
+                label: const Text('Salva API Key'),
+              ),
+
+              const SizedBox(width: 10),
+
+              FilledButton.icon(
+                onPressed: _isSavingGeminiApiKey
+                    ? () {}
+                    : () async {
+                        await SecureStorageService.deleteGeminiApiKey();
+
+                        if (!mounted) return;
+
+                        _geminiApiKeyController.clear();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('API Key Gemini rimossa.'),
+                          ),
+                        );
+                      },
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                icon: const Icon(Icons.delete_outline),
+                label: const Text('Rimuovi'),
+              ),
+            ],
           ),
         ],
       ),

@@ -38,7 +38,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
 
     NotificationService.instance.onOpenContract = (contractId) {
-      print('Dashboard: richiesta apertura contratto $contractId');
+      //print('Dashboard: richiesta apertura contratto $contractId');
 
       setState(() {
         _contractIdToOpen = contractId;
@@ -123,7 +123,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _loadData();
           },
           onOpenContract: (contractId) {
-            print('Notifiche: richiesta apertura contratto $contractId');
+            //print('Notifiche: richiesta apertura contratto $contractId');
 
             setState(() {
               _contractIdToOpen = contractId;
