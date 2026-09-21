@@ -9,6 +9,18 @@ class Contract {
   final String frequency;
   final String? agent;
   final String? codagent;
+  final String? clientType;
+  final String? mercCategory;
+  final String? invoicePeriod;
+  final double? meterPower;
+  final double? annualVolume;
+  final String? offerType;
+  final double? variableSpreadNew;
+  final double? variableSpreadOld;
+  final String? currentManager;
+  final String? acquisitionDate;
+  final String? previousManager;
+  final String? expirationNoticeDate;
   final String? filePath;
   final String? notes;
   final DateTime timestampINS;
@@ -25,6 +37,18 @@ class Contract {
     required this.frequency,
     this.agent,
     this.codagent,
+    this.clientType,
+    this.mercCategory,
+    this.invoicePeriod,
+    this.meterPower,
+    this.annualVolume,
+    this.offerType,
+    this.variableSpreadNew,
+    this.variableSpreadOld,
+    this.currentManager,
+    this.acquisitionDate,
+    this.previousManager,
+    this.expirationNoticeDate,
     this.filePath,
     this.notes,
     required this.timestampINS,

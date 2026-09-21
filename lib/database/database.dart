@@ -30,7 +30,7 @@ class DatabaseHelper {
     return await databaseFactory.openDatabase(
       path,
       options: OpenDatabaseOptions(
-        version: 8,
+        version: 9,
 
         onCreate: (db, version) async {
           // CLIENTS
@@ -65,6 +65,18 @@ class DatabaseHelper {
               frequency TEXT NOT NULL,
               agent TEXT,
               codagent TEXT,
+              clientType TEXT,
+              mercCategory TEXT,
+              invoicePeriod TEXT,
+              meterPower REAL,
+              annualVolume REAL,
+              offerType TEXT,
+              variableSpreadNew REAL,
+              variableSpreadOld REAL,
+              currentManager TEXT,
+              acquisitionDate TEXT,
+              previousManager TEXT,
+              expirationNoticeDate TEXT,
               filePath TEXT,
               notes TEXT,
               TimestampINS TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -189,6 +201,54 @@ class DatabaseHelper {
             await db.execute(
               'ALTER TABLE settings ADD COLUMN notify60Days '
               'INTEGER NOT NULL DEFAULT 1',
+            );
+          }
+
+          if (oldVersion < 9) {
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN clientType TEXT',
+            );
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN mercCategory TEXT',
+            );
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN invoicePeriod TEXT',
+            );
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN meterPower REAL',
+            );
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN annualVolume REAL',
+            );
+
+            await db.execute('ALTER TABLE contracts ADD COLUMN offerType TEXT');
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN variableSpreadNew REAL',
+            );
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN variableSpreadOld REAL',
+            );
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN currentManager TEXT',
+            );
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN acquisitionDate TEXT',
+            );
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN previousManager TEXT',
+            );
+
+            await db.execute(
+              'ALTER TABLE contracts ADD COLUMN expirationNoticeDate TEXT',
             );
           }
         },

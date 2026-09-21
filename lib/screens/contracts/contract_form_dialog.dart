@@ -35,10 +35,22 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
   late final TextEditingController _notesController;
   late final TextEditingController _agentController;
   late final TextEditingController _codAgentController;
+  late final TextEditingController _mercCategoryController;
+  late final TextEditingController _invoicePeriodController;
+  late final TextEditingController _meterPowerController;
+  late final TextEditingController _annualVolumeController;
+  late final TextEditingController _variableSpreadNewController;
+  late final TextEditingController _variableSpreadOldController;
+  late final TextEditingController _currentManagerController;
+  late final TextEditingController _acquisitionDateController;
+  late final TextEditingController _previousManagerController;
+  late final TextEditingController _expirationNoticeDateController;
   final _formKey = GlobalKey<FormState>();
 
   int? _selectedClientId;
   String _selectedFrequency = 'Mensile';
+  String? _selectedClientType;
+  String? _selectedOfferType;
   String? _filePath;
   String? _oldFilePath;
   String? _newFilePath;
@@ -75,9 +87,51 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
 
     _codAgentController = TextEditingController(text: contract?.codagent ?? '');
 
+    _mercCategoryController = TextEditingController(
+      text: contract?.mercCategory ?? '',
+    );
+
+    _invoicePeriodController = TextEditingController(
+      text: contract?.invoicePeriod ?? '',
+    );
+
+    _meterPowerController = TextEditingController(
+      text: contract?.meterPower?.toString() ?? '',
+    );
+
+    _annualVolumeController = TextEditingController(
+      text: contract?.annualVolume?.toString() ?? '',
+    );
+
+    _variableSpreadNewController = TextEditingController(
+      text: contract?.variableSpreadNew?.toString() ?? '',
+    );
+
+    _variableSpreadOldController = TextEditingController(
+      text: contract?.variableSpreadOld?.toString() ?? '',
+    );
+
+    _currentManagerController = TextEditingController(
+      text: contract?.currentManager ?? '',
+    );
+
+    _acquisitionDateController = TextEditingController(
+      text: contract?.acquisitionDate ?? '',
+    );
+
+    _previousManagerController = TextEditingController(
+      text: contract?.previousManager ?? '',
+    );
+
+    _expirationNoticeDateController = TextEditingController(
+      text: contract?.expirationNoticeDate ?? '',
+    );
+
     if (contract != null) {
       _selectedClientId = contract.clientId;
       _selectedFrequency = contract.frequency;
+      _selectedClientType = contract.clientType;
+      _selectedOfferType = contract.offerType;
     }
   }
 
@@ -251,6 +305,26 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
       frequency: _selectedFrequency,
       agent: _agentController.text.trim(),
       codagent: _codAgentController.text.trim(),
+      clientType: _selectedClientType,
+      mercCategory: _mercCategoryController.text.trim(),
+      invoicePeriod: _invoicePeriodController.text.trim(),
+      meterPower: double.tryParse(
+        _meterPowerController.text.replaceAll(',', '.'),
+      ),
+      annualVolume: double.tryParse(
+        _annualVolumeController.text.replaceAll(',', '.'),
+      ),
+      offerType: _selectedOfferType,
+      variableSpreadNew: double.tryParse(
+        _variableSpreadNewController.text.replaceAll(',', '.'),
+      ),
+      variableSpreadOld: double.tryParse(
+        _variableSpreadOldController.text.replaceAll(',', '.'),
+      ),
+      currentManager: _currentManagerController.text.trim(),
+      acquisitionDate: _acquisitionDateController.text.trim(),
+      previousManager: _previousManagerController.text.trim(),
+      expirationNoticeDate: _expirationNoticeDateController.text.trim(),
       filePath: _filePath,
       notes: _notesController.text.trim(),
       timestampINS: widget.contract?.timestampINS ?? DateTime.now(),
@@ -417,6 +491,45 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
                   },
                 ),
                 const SizedBox(height: 16),
+                //Tipo cliente
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedClientType,
+                  decoration: const InputDecoration(labelText: 'Tipo cliente'),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'Residenziale',
+                      child: Text('Residenziale'),
+                    ),
+                    DropdownMenuItem(value: 'Micro', child: Text('Micro')),
+                    DropdownMenuItem(value: 'SME', child: Text('SME')),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedClientType = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                //Categoria merceologica
+                TextFormField(
+                  controller: _mercCategoryController,
+                  decoration: const InputDecoration(
+                    labelText: 'Categoria merceologica',
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                //Fattura cliente periodo
+                TextFormField(
+                  controller: _invoicePeriodController,
+                  decoration: const InputDecoration(
+                    labelText: 'Fattura cliente periodo',
+                    hintText: 'Es. Maggio 2024',
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 TextFormField(
                   controller: _typeController,
                   decoration: const InputDecoration(
@@ -485,6 +598,191 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
                   },
                 ),
                 const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _expirationNoticeDateController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Data notifica scadenza 60 gg',
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () {
+                    _selectDate(_expirationNoticeDateController);
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                //Potenza contatore
+                TextFormField(
+                  controller: _meterPowerController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'Potenza contatore',
+                    suffixText: 'kW',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return null;
+                    }
+
+                    final power = double.tryParse(value.replaceAll(',', '.'));
+
+                    if (power == null) {
+                      return 'Inserisci una potenza valida';
+                    }
+
+                    if (power < 0) {
+                      return 'La potenza non può essere negativa';
+                    }
+
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _annualVolumeController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'Volumi annui',
+                    suffixText: 'kWh',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return null;
+                    }
+
+                    final volume = double.tryParse(value.replaceAll(',', '.'));
+
+                    if (volume == null) {
+                      return 'Inserisci un volume valido';
+                    }
+
+                    if (volume < 0) {
+                      return 'Il volume non può essere negativo';
+                    }
+
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                DropdownButtonFormField<String>(
+                  initialValue: _selectedOfferType,
+                  decoration: const InputDecoration(
+                    labelText: 'Offerta prezzo',
+                  ),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'Prezzo Variabile',
+                      child: Text('Prezzo Variabile'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Prezzo Fisso',
+                      child: Text('Prezzo Fisso'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Prezzo Mix',
+                      child: Text('Prezzo Mix'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedOfferType = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _variableSpreadNewController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'Spread nuova tariffa',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return null;
+                    }
+
+                    final spread = double.tryParse(value.replaceAll(',', '.'));
+
+                    if (spread == null) {
+                      return 'Inserisci uno spread valido';
+                    }
+
+                    if (spread < 0) {
+                      return 'Lo spread non può essere negativo';
+                    }
+
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _variableSpreadOldController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'Spread vecchia tariffa',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return null;
+                    }
+
+                    final spread = double.tryParse(value.replaceAll(',', '.'));
+
+                    if (spread == null) {
+                      return 'Inserisci uno spread valido';
+                    }
+
+                    if (spread < 0) {
+                      return 'Lo spread non può essere negativo';
+                    }
+
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _currentManagerController,
+                  decoration: const InputDecoration(
+                    labelText: 'Gestore attuale',
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _acquisitionDateController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Data acquisizione',
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () {
+                    _selectDate(_acquisitionDateController);
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                TextFormField(
+                  controller: _previousManagerController,
+                  decoration: const InputDecoration(
+                    labelText: 'Gestore precedente',
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 TextFormField(
                   controller: _amountController,
                   keyboardType: const TextInputType.numberWithOptions(
@@ -683,6 +981,16 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
     _notesController.dispose();
     _agentController.dispose();
     _codAgentController.dispose();
+    _mercCategoryController.dispose();
+    _invoicePeriodController.dispose();
+    _meterPowerController.dispose();
+    _annualVolumeController.dispose();
+    _variableSpreadNewController.dispose();
+    _variableSpreadOldController.dispose();
+    _currentManagerController.dispose();
+    _acquisitionDateController.dispose();
+    _previousManagerController.dispose();
+    _expirationNoticeDateController.dispose();
 
     super.dispose();
   }
