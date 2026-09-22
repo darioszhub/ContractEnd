@@ -224,31 +224,59 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
 
       if (!mounted) return;
 
+      // Tipo contratto
       _typeController.text = data['tipo_contratto']?.toString() ?? '';
 
+      // Numero contratto
       _numberController.text = data['numero_contratto']?.toString() ?? '';
 
+      // Data inizio
       _startDateController.text = data['data_inizio']?.toString() ?? '';
 
+      // Data scadenza
       final expirationDate = data['data_scadenza']?.toString();
       final notes = data['note']?.toString() ?? '';
 
       if (expirationDate != null && expirationDate.trim().isNotEmpty) {
-        if (expirationDate.toLowerCase().contains('tempo indeterminato')) {
-          _expirationDateController.text = '01/01/2199';
-        } else {
-          _expirationDateController.text = expirationDate;
+        _expirationDateController.text = expirationDate;
+
+        final parsedExpirationDate = _parseDate(expirationDate);
+
+        if (parsedExpirationDate != null) {
+          final noticeDate = parsedExpirationDate.subtract(
+            const Duration(days: 60),
+          );
+
+          final day = noticeDate.day.toString().padLeft(2, '0');
+          final month = noticeDate.month.toString().padLeft(2, '0');
+          final year = noticeDate.year.toString();
+
+          _expirationNoticeDateController.text = '$day/$month/$year';
         }
       } else if (notes.toLowerCase().contains('tempo indeterminato')) {
         _expirationDateController.text = '01/01/2199';
+
+        final noticeDate = DateTime(
+          2199,
+          1,
+          1,
+        ).subtract(const Duration(days: 60));
+
+        final day = noticeDate.day.toString().padLeft(2, '0');
+        final month = noticeDate.month.toString().padLeft(2, '0');
+        final year = noticeDate.year.toString();
+
+        _expirationNoticeDateController.text = '$day/$month/$year';
       } else {
         _expirationDateController.clear();
+        _expirationNoticeDateController.clear();
       }
 
+      // Importo
       final amount = data['importo'];
-
       _amountController.text = amount?.toString() ?? '';
 
+      // Frequenza pagamento
       final frequency = data['frequenza_pagamento']?.toString().trim();
 
       if (frequency != null && frequency.isNotEmpty) {
@@ -265,7 +293,80 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
         }
       }
 
-      _notesController.text = data['note']?.toString() ?? '';
+      // Agente
+      _agentController.text = data['agente']?.toString() ?? '';
+
+      // Codice agente
+      _codAgentController.text = data['codice_agente']?.toString() ?? '';
+
+      // Tipo cliente
+      final clientType = data['tipo_cliente']?.toString().trim();
+
+      if (clientType != null && clientType.isNotEmpty) {
+        final matchingClientType = _findSimilarValue(clientType, const [
+          'Residenziale',
+          'Micro',
+          'SME',
+        ]);
+
+        if (matchingClientType != null) {
+          _selectedClientType = matchingClientType;
+        }
+      }
+
+      // Categoria merceologica
+      _mercCategoryController.text =
+          data['categoria_merceologica']?.toString() ?? '';
+
+      // Periodo fattura cliente
+      _invoicePeriodController.text =
+          data['periodo_fattura_cliente']?.toString() ?? '';
+
+      // Potenza contatore
+      final meterPower = data['potenza_contatore'];
+      _meterPowerController.text = meterPower?.toString() ?? '';
+
+      // Volumi annui
+      final annualVolume = data['volumi_annui'];
+      _annualVolumeController.text = annualVolume?.toString() ?? '';
+
+      // Tipologia offerta
+      final offerType = data['tipologia_offerta']?.toString().trim();
+
+      if (offerType != null && offerType.isNotEmpty) {
+        final matchingOfferType = _findSimilarValue(offerType, const [
+          'Prezzo Variabile',
+          'Prezzo Fisso',
+          'Prezzo Mix',
+        ]);
+
+        if (matchingOfferType != null) {
+          _selectedOfferType = matchingOfferType;
+        }
+      }
+
+      // Spread nuova tariffa
+      final variableSpreadNew = data['spread_nuova_tariffa'];
+      _variableSpreadNewController.text = variableSpreadNew?.toString() ?? '';
+
+      // Spread vecchia tariffa
+      final variableSpreadOld = data['spread_vecchia_tariffa'];
+      _variableSpreadOldController.text = variableSpreadOld?.toString() ?? '';
+
+      // Gestore attuale
+      _currentManagerController.text =
+          data['gestore_attuale']?.toString() ?? '';
+
+      // Data acquisizione
+      _acquisitionDateController.text =
+          data['data_acquisizione']?.toString() ?? '';
+
+      // Gestore precedente
+      _previousManagerController.text =
+          data['gestore_precedente']?.toString() ?? '';
+
+      // Note
+      _notesController.text = notes;
 
       setState(() {});
 
@@ -341,7 +442,7 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
     final pickedDate = await showDatePicker(
       context: context,
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      lastDate: DateTime(2200),
       initialDate: DateTime.now(),
     );
 
@@ -352,6 +453,17 @@ class _ContractFormDialogState extends State<ContractFormDialog> {
     final year = pickedDate.year.toString();
 
     controller.text = '$day/$month/$year';
+
+    if (controller == _expirationDateController) {
+      final noticeDate = pickedDate.subtract(const Duration(days: 60));
+
+      final noticeDay = noticeDate.day.toString().padLeft(2, '0');
+      final noticeMonth = noticeDate.month.toString().padLeft(2, '0');
+      final noticeYear = noticeDate.year.toString();
+
+      _expirationNoticeDateController.text =
+          '$noticeDay/$noticeMonth/$noticeYear';
+    }
   }
 
   Future<void> _pickPdf() async {
