@@ -42,7 +42,8 @@ class ContractEndApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1559A2))
+            .copyWith(primary: const Color(0xFF1559A2)),
       ),
       home: const DashboardScreen(),
     );

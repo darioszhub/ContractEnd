@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'contract_form_dialog.dart';
+import 'advanced_search_dialog.dart';
 import '../../models/contract.dart';
 import '../../repositories/contract_repository.dart';
 import '../../models/client.dart';
@@ -26,6 +27,7 @@ class _ContractsScreenState extends State<ContractsScreen> {
   final List<Client> _clients = [];
 
   String _searchText = '';
+  AdvancedSearchResult? _advancedFilters;
 
   BuildContext? _contractDialogContext;
 
@@ -49,6 +51,26 @@ class _ContractsScreenState extends State<ContractsScreen> {
     if (widget.contractIdToOpen != oldWidget.contractIdToOpen) {
       _loadData();
     }
+  }
+
+  Future<void> _openAdvancedSearch() async {
+    final result = await showDialog<AdvancedSearchResult>(
+      context: context,
+      builder: (dialogContext) {
+        return AdvancedSearchDialog(
+          clients: _clients,
+          initialFilters: _advancedFilters,
+        );
+      },
+    );
+
+    if (result == null) {
+      return;
+    }
+
+    setState(() {
+      _advancedFilters = result.hasFilters ? result : null;
+    });
   }
 
   Future<void> _loadData() async {
@@ -85,18 +107,194 @@ class _ContractsScreenState extends State<ContractsScreen> {
   }
 
   List<Contract> get _filteredContracts {
-    if (_searchText.isEmpty) {
-      return _contracts;
-    }
-
     return _contracts.where((contract) {
-      final searchData =
-          '${_getClientName(contract.clientId)} '
-                  '${contract.type} '
-                  '${contract.number}'
-              .toLowerCase();
+      // Ricerca base
+      if (_searchText.isNotEmpty) {
+        final searchData =
+            '${_getClientName(contract.clientId)} '
+                    '${contract.type} '
+                    '${contract.number}'
+                .toLowerCase();
 
-      return searchData.contains(_searchText);
+        if (!searchData.contains(_searchText)) {
+          return false;
+        }
+      }
+
+      // Ricerca avanzata
+      final filters = _advancedFilters;
+
+      if (filters == null) {
+        return true;
+      }
+
+      // Cliente
+      if (filters.clientId != null && contract.clientId != filters.clientId) {
+        return false;
+      }
+
+      // Tipo cliente
+      if (filters.clientType != null &&
+          contract.clientType != filters.clientType) {
+        return false;
+      }
+
+      // Categoria merceologica
+      if (filters.mercCategory != null &&
+          !(contract.mercCategory ?? '').toLowerCase().contains(
+            filters.mercCategory!.toLowerCase(),
+          )) {
+        return false;
+      }
+
+      // Fattura cliente periodo
+      if (filters.invoicePeriod != null &&
+          !(contract.invoicePeriod ?? '').toLowerCase().contains(
+            filters.invoicePeriod!.toLowerCase(),
+          )) {
+        return false;
+      }
+
+      // Tipo contratto
+      if (filters.type != null &&
+          !contract.type.toLowerCase().contains(filters.type!.toLowerCase())) {
+        return false;
+      }
+
+      // Numero contratto
+      if (filters.number != null &&
+          !contract.number.toLowerCase().contains(
+            filters.number!.toLowerCase(),
+          )) {
+        return false;
+      }
+
+      // Data inizio
+      if (!_dateInRange(
+        contract.startDate,
+        filters.startDateFrom,
+        filters.startDateTo,
+      )) {
+        return false;
+      }
+
+      // Data scadenza
+      if (!_dateInRange(
+        contract.expirationDate,
+        filters.expirationDateFrom,
+        filters.expirationDateTo,
+      )) {
+        return false;
+      }
+
+      // Data acquisizione
+      if (!_dateInRange(
+        contract.acquisitionDate,
+        filters.acquisitionDateFrom,
+        filters.acquisitionDateTo,
+      )) {
+        return false;
+      }
+
+      // Data notifica scadenza
+      if (!_dateInRange(
+        contract.expirationNoticeDate,
+        filters.expirationNoticeDateFrom,
+        filters.expirationNoticeDateTo,
+      )) {
+        return false;
+      }
+
+      // Importo
+      if (!_numberInRange(
+        contract.amount,
+        filters.amountFrom,
+        filters.amountTo,
+      )) {
+        return false;
+      }
+
+      // Potenza contatore
+      if (!_numberInRange(
+        contract.meterPower,
+        filters.meterPowerFrom,
+        filters.meterPowerTo,
+      )) {
+        return false;
+      }
+
+      // Volumi annui
+      if (!_numberInRange(
+        contract.annualVolume,
+        filters.annualVolumeFrom,
+        filters.annualVolumeTo,
+      )) {
+        return false;
+      }
+
+      // Tipologia offerta
+      if (filters.offerType != null &&
+          contract.offerType != filters.offerType) {
+        return false;
+      }
+
+      // Spread nuova tariffa
+      if (!_numberInRange(
+        contract.variableSpreadNew,
+        filters.variableSpreadNewFrom,
+        filters.variableSpreadNewTo,
+      )) {
+        return false;
+      }
+
+      // Spread vecchia tariffa
+      if (!_numberInRange(
+        contract.variableSpreadOld,
+        filters.variableSpreadOldFrom,
+        filters.variableSpreadOldTo,
+      )) {
+        return false;
+      }
+
+      // Gestore attuale
+      if (filters.currentManager != null &&
+          !(contract.currentManager ?? '').toLowerCase().contains(
+            filters.currentManager!.toLowerCase(),
+          )) {
+        return false;
+      }
+
+      // Gestore precedente
+      if (filters.previousManager != null &&
+          !(contract.previousManager ?? '').toLowerCase().contains(
+            filters.previousManager!.toLowerCase(),
+          )) {
+        return false;
+      }
+
+      // Agente
+      if (filters.agent != null &&
+          !(contract.agent ?? '').toLowerCase().contains(
+            filters.agent!.toLowerCase(),
+          )) {
+        return false;
+      }
+
+      // Codice agente
+      if (filters.codagent != null &&
+          !(contract.codagent ?? '').toLowerCase().contains(
+            filters.codagent!.toLowerCase(),
+          )) {
+        return false;
+      }
+
+      // Frequenza pagamento
+      if (filters.frequency != null &&
+          contract.frequency != filters.frequency) {
+        return false;
+      }
+
+      return true;
     }).toList();
   }
 
@@ -114,6 +312,60 @@ class _ContractsScreenState extends State<ContractsScreen> {
     }
 
     return '${client.name} ${client.surname}';
+  }
+
+  bool _numberInRange(double? value, double? from, double? to) {
+    if (from == null && to == null) {
+      return true;
+    }
+
+    if (value == null) {
+      return false;
+    }
+
+    if (from != null && value < from) {
+      return false;
+    }
+
+    if (to != null && value > to) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool _dateInRange(String? value, DateTime? from, DateTime? to) {
+    if (from == null && to == null) {
+      return true;
+    }
+
+    if (value == null || value.trim().isEmpty) {
+      return false;
+    }
+
+    final parts = value.split('/');
+
+    if (parts.length != 3) {
+      return false;
+    }
+
+    final date = DateTime(
+      int.parse(parts[2]),
+      int.parse(parts[1]),
+      int.parse(parts[0]),
+    );
+
+    final normalizedDate = DateTime(date.year, date.month, date.day);
+
+    if (from != null && normalizedDate.isBefore(from)) {
+      return false;
+    }
+
+    if (to != null && normalizedDate.isAfter(to)) {
+      return false;
+    }
+
+    return true;
   }
 
   int _daysUntilExpiration(String date) {
@@ -329,26 +581,46 @@ class _ContractsScreenState extends State<ContractsScreen> {
 
           const SizedBox(height: 25),
 
-          SizedBox(
-            width: 400,
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Cerca contratto...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchText.isNotEmpty
-                    ? IconButton(
-                        onPressed: () {
-                          _searchController.clear();
-                        },
-                        icon: const Icon(Icons.clear),
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+          Row(
+            children: [
+              SizedBox(
+                width: 400,
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Cerca contratto...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchText.isNotEmpty
+                        ? IconButton(
+                            onPressed: () {
+                              _searchController.clear();
+                            },
+                            icon: const Icon(Icons.clear),
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                 ),
               ),
-            ),
+
+              const SizedBox(width: 12),
+
+              SizedBox(
+                height: 47,
+                child: OutlinedButton.icon(
+                  onPressed: _openAdvancedSearch,
+                  icon: const Icon(Icons.tune),
+                  label: const Text('Ricerca avanzata'),
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 25),
