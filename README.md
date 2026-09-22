@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  Applicazione desktop Windows per la gestione delle scadenze dei contratti.
+  Applicazione desktop Windows per la gestione di clienti, contratti e relative scadenze.
 </p>
 
 ---
@@ -16,34 +16,136 @@
 
 **ContractEnd** è un'applicazione desktop sviluppata con **Flutter e Dart** per la gestione di clienti, contratti e relative scadenze.
 
-Il progetto nasce con l'obiettivo di realizzare uno strumento semplice e intuitivo per tenere sotto controllo i contratti in scadenza e, in futuro, automatizzare la gestione delle notifiche.
+L'applicazione permette di organizzare i dati dei clienti e dei contratti, associare documenti PDF, monitorare le scadenze e ricevere notifiche automatiche su Windows.
+
+È inoltre possibile utilizzare **Google Gemini** per analizzare automaticamente i documenti PDF dei contratti e compilare i relativi campi, riducendo l'inserimento manuale dei dati.
+
+Il progetto è stato sviluppato con particolare attenzione alla semplicità di utilizzo, alla gestione locale dei dati e alla separazione delle responsabilità tra interfaccia, persistenza e servizi applicativi.
 
 ## ✨ Funzionalità
 
-* 📊 Dashboard con riepilogo delle informazioni principali
-* 👥 Gestione dei clienti
-* 📄 Gestione dei contratti
-* 📅 Gestione delle date di inizio e scadenza
-* ⚠️ Indicazione dello stato del contratto
-* 🔎 Ricerca di clienti e contratti
-* 📝 Inserimento e modifica dei dati
-* 🗑️ Eliminazione dei dati
-* 📎 Associazione di documenti PDF ai contratti
-* ✅ Validazione dei dati inseriti
-* 🖥️ Interfaccia desktop Windows
-* 🎨 Icona personalizzata dell'applicazione
+### 👥 Gestione clienti
+
+* Creazione e modifica dei clienti
+* Gestione dei dati anagrafici
+* Supporto per clienti privati e aziende
+* Ricerca dei clienti
+* Eliminazione dei clienti
+
+### 📄 Gestione contratti
+
+* Creazione e modifica dei contratti
+* Gestione delle date di inizio e scadenza
+* Gestione dei dati economici e commerciali
+* Gestione del tipo di cliente
+* Gestione della categoria merceologica
+* Gestione della potenza del contatore e dei volumi annui
+* Gestione della tipologia di offerta
+* Gestione degli spread tariffari
+* Gestione del gestore attuale e precedente
+* Gestione dei dati dell'agente
+* Gestione delle note
+* Indicazione automatica dello stato del contratto
+* Calcolo dei giorni mancanti alla scadenza
+
+### 🔎 Ricerca
+
+* Ricerca testuale dei contratti
+* Ricerca avanzata
+* Filtro per cliente
+* Filtro per tipo cliente
+* Filtro per categoria merceologica
+* Filtro per periodo di fatturazione
+* Filtro per tipo e numero contratto
+* Filtro per intervalli di date
+* Filtro per importi
+* Filtro per potenza del contatore
+* Filtro per volumi annui
+* Filtro per tipologia di offerta
+* Filtro per spread tariffari
+* Filtro per gestore attuale e precedente
+* Filtro per agente e codice agente
+* Filtro per frequenza di pagamento
+* Possibilità di combinare ricerca testuale e filtri avanzati
+
+### 📎 Gestione documenti PDF
+
+* Selezione dei documenti PDF dal computer
+* Copia dei documenti nella cartella dedicata dell'applicazione
+* Associazione del documento al relativo contratto
+* Apertura del documento PDF direttamente dall'applicazione
+* Eliminazione sicura del documento associato
+* Gestione dei documenti indipendente dal percorso originale del file
+
+### 🤖 Integrazione Google Gemini
+
+* Analisi automatica dei documenti PDF dei contratti
+* Estrazione dei dati dal documento
+* Compilazione automatica dei campi del contratto
+* Supporto all'estrazione di dati anagrafici, contrattuali, economici e commerciali
+* Configurazione della Google Gemini API Key direttamente dall'applicazione
+* Salvataggio sicuro della API Key tramite Windows Secure Storage
+* Possibilità di mostrare o nascondere la API Key
+* Possibilità di rimuovere la API Key salvata
+
+### 🔔 Sistema di notifiche
+
+* Notifiche native Windows relative alle scadenze
+* Controllo automatico delle scadenze all'avvio dell'applicazione
+* Notifiche configurabili per:
+
+  * 90 giorni prima
+  * 60 giorni prima
+  * 30 giorni prima
+  * 15 giorni prima
+  * 7 giorni prima
+  * 1 giorno prima
+  * giorno della scadenza
+  * contratti già scaduti
+* Recupero delle notifiche non generate quando l'applicazione non era stata avviata nel giorno previsto
+* Storico delle notifiche
+* Possibilità di segnare le notifiche come lette
+* Eliminazione delle singole notifiche
+* Eliminazione di tutte le notifiche
+* Apertura diretta del contratto dalla relativa notifica
+
+### ⚙️ Impostazioni
+
+* Abilitazione e disabilitazione delle notifiche
+* Configurazione del controllo delle scadenze all'avvio
+* Configurazione delle date per le notifiche
+* Configurazione delle notifiche per i contratti già scaduti
+* Configurazione della Google Gemini API Key
+* Gestione sicura della API Key
+
+### 🎨 Interfaccia
+
+* Interfaccia desktop Windows
+* Material 3
+* Navigazione tramite sidebar
+* Dashboard con riepilogo delle informazioni
+* Tema personalizzato
+* Colore primario personalizzato
+* Icona personalizzata dell'applicazione
+* Interfaccia pensata per un utilizzo semplice e professionale
 
 ## 🛠️ Tecnologie
 
 * **Flutter**
 * **Dart**
 * **Material 3**
+* **SQLite**
+* **sqflite_common_ffi**
 * **file_picker**
+* **flutter_desktop_notifications**
+* **flutter_secure_storage**
+* **Google Gemini API**
+* **HTTP**
 * **Git / GitHub**
 
 ## 💻 Piattaforma
 
-Attualmente l'applicazione è sviluppata per:
+L'applicazione è attualmente sviluppata per:
 
 * Windows 10
 * Windows 11
@@ -53,15 +155,36 @@ Attualmente l'applicazione è sviluppata per:
 ```text
 lib/
 ├── main.dart
+├── database/
+│   └── database.dart
+├── models/
+│   ├── client.dart
+│   ├── contract.dart
+│   ├── notification.dart
+│   └── setting.dart
+├── repositories/
+│   ├── client_repository.dart
+│   ├── contract_repository.dart
+│   ├── notification_repository.dart
+│   └── setting_repository.dart
 ├── screens/
 │   ├── dashboard/
 │   │   └── dashboard_screen.dart
 │   ├── clients/
 │   │   ├── clients_screen.dart
 │   │   └── client_form_dialog.dart
-│   └── contracts/
-│       ├── contracts_screen.dart
-│       └── contract_form_dialog.dart
+│   ├── contracts/
+│   │   ├── contracts_screen.dart
+│   │   ├── contract_form_dialog.dart
+│   │   └── advanced_search_dialog.dart
+│   ├── notifications/
+│   │   └── notifications_screen.dart
+│   └── settings/
+│       └── settings_screen.dart
+├── services/
+│   ├── notification_service.dart
+│   ├── secure_storage_service.dart
+│   └── gemini_service.dart
 └── widgets/
     ├── app_sidebar.dart
     └── stat_card.dart
@@ -76,49 +199,74 @@ assets/
 ### Completato
 
 * [x] Dashboard
-* [x] Interfaccia gestione clienti
-* [x] Interfaccia gestione contratti
+* [x] Gestione clienti
+* [x] Gestione contratti
+* [x] Gestione dati anagrafici
+* [x] Gestione delle scadenze
 * [x] Ricerca clienti e contratti
+* [x] Ricerca avanzata dei contratti
+* [x] Filtri per date e intervalli numerici
 * [x] Validazione dei form
-* [x] Selezione dei documenti PDF
-* [x] Indicazione dello stato dei contratti
-* [x] Widget testing
+* [x] Database SQLite
+* [x] Salvataggio persistente dei clienti
+* [x] Salvataggio persistente dei contratti
+* [x] Gestione dei documenti PDF
+* [x] Copia dei PDF nella cartella dedicata dell'applicazione
+* [x] Notifiche native Windows
+* [x] Notifiche automatiche per le scadenze
+* [x] Notifiche per più intervalli temporali
+* [x] Recupero delle notifiche non generate
+* [x] Storico delle notifiche
+* [x] Gestione delle notifiche lette
+* [x] Impostazioni dell'applicazione
+* [x] Configurazione delle notifiche
+* [x] Integrazione Google Gemini
+* [x] Analisi automatica dei PDF tramite Gemini
+* [x] Compilazione automatica dei dati dei contratti
+* [x] Configurazione della Gemini API Key
+* [x] Salvataggio sicuro della API Key
 * [x] Icona personalizzata Windows
 * [x] Icona personalizzata nell'interfaccia
+* [x] Widget testing
 
-### In sviluppo
+### 🔜 In sviluppo / Possibili sviluppi futuri
 
-* [ ] Database SQLite
-* [ ] Salvataggio persistente dei clienti
-* [ ] Salvataggio persistente dei contratti
-* [ ] Statistiche reali nella dashboard
-* [ ] Notifiche native Windows
-* [ ] Notifiche automatiche per le scadenze
-* [ ] Storico delle notifiche
-* [ ] Impostazioni dell'applicazione
-* [ ] Gestione migliorata dei documenti
+* [ ] Miglioramento della dashboard con statistiche e grafici
+* [ ] Miglioramento della gestione dei documenti
+* [ ] Ulteriori strumenti di esportazione e reportistica
+* [ ] Ulteriori filtri e strumenti di ricerca
+* [ ] Miglioramenti all'esperienza utente
 
 ## 🎯 Obiettivi del progetto
 
 Il progetto è sviluppato con particolare attenzione a:
 
 * semplicità di utilizzo
-* organizzazione del codice
+* organizzazione e leggibilità del codice
 * separazione delle responsabilità
 * validazione dei dati
-* gestione locale delle informazioni
-* futura automazione delle notifiche
-* sviluppo di un'applicazione desktop completa per Windows
+* persistenza locale delle informazioni
+* automazione della gestione delle scadenze
+* gestione sicura delle credenziali
+* integrazione con servizi di intelligenza artificiale
+* gestione locale dei documenti
+* realizzazione di un'applicazione desktop completa per Windows
 
 ## 📌 Stato del progetto
 
 **In sviluppo**
 
-Il progetto è attualmente nella fase di sviluppo dell'interfaccia e delle funzionalità di base. Le prossime fasi saranno dedicate alla persistenza dei dati tramite SQLite e al sistema di notifiche Windows.
+ContractEnd dispone attualmente delle principali funzionalità per la gestione di clienti, contratti, documenti, scadenze e notifiche.
+
+Il sistema di persistenza tramite SQLite è operativo, così come il sistema di notifiche Windows, la ricerca avanzata e l'integrazione con Google Gemini per l'analisi automatica dei documenti.
+
+Il progetto continua a essere sviluppato con l'obiettivo di migliorare progressivamente funzionalità, interfaccia e gestione dei dati.
 
 ## 📄 Licenza
 
-Progetto personale sviluppato a scopo di studio, sperimentazione e portfolio.
+Il codice sorgente di **ContractEnd** è distribuito sotto la **MIT License**.
+
+Il progetto utilizza pacchetti e librerie di terze parti, che rimangono soggetti alle rispettive licenze.
 
 ---
 
@@ -128,29 +276,131 @@ Progetto personale sviluppato a scopo di studio, sperimentazione e portfolio.
 
 **ContractEnd** is a desktop application developed with **Flutter and Dart** for managing clients, contracts, and contract expiration dates.
 
-The project aims to provide a simple and intuitive tool for keeping track of expiring contracts and, in future versions, automating the notification system.
+The application allows users to organize client and contract information, attach PDF documents, monitor expiration dates, and receive automatic Windows notifications.
+
+It also integrates **Google Gemini** to automatically analyze contract PDF documents and populate contract fields, reducing manual data entry.
+
+The project focuses on simplicity, local data management, clean code organization, and separation of responsibilities between the user interface, data persistence, and application services.
 
 ## ✨ Features
 
-* 📊 Dashboard with key information overview
-* 👥 Client management
-* 📄 Contract management
-* 📅 Contract start and expiration dates
-* ⚠️ Contract status tracking
-* 🔎 Client and contract search
-* 📝 Data creation and editing
-* 🗑️ Data deletion
-* 📎 PDF document attachment to contracts
-* ✅ Form validation
-* 🖥️ Windows desktop interface
-* 🎨 Custom application icon
+### 👥 Client Management
+
+* Create and edit clients
+* Manage client information
+* Support for individuals and companies
+* Client search
+* Client deletion
+
+### 📄 Contract Management
+
+* Create and edit contracts
+* Contract start and expiration dates
+* Economic and commercial information
+* Customer type management
+* Product category management
+* Meter power and annual consumption
+* Offer type management
+* New and previous tariff spreads
+* Current and previous supplier management
+* Agent information
+* Notes
+* Automatic contract status
+* Remaining days until expiration
+
+### 🔎 Search
+
+* Contract text search
+* Advanced contract search
+* Client filtering
+* Customer type filtering
+* Product category filtering
+* Billing period filtering
+* Contract type and number filtering
+* Date range filtering
+* Amount range filtering
+* Meter power range filtering
+* Annual consumption range filtering
+* Offer type filtering
+* Tariff spread filtering
+* Current and previous supplier filtering
+* Agent and agent code filtering
+* Payment frequency filtering
+* Combination of text search and advanced filters
+
+### 📎 PDF Document Management
+
+* Select PDF documents from the computer
+* Copy documents into the application's dedicated folder
+* Associate documents with contracts
+* Open PDF documents directly from the application
+* Safely remove associated documents
+* Manage documents independently from their original file location
+
+### 🤖 Google Gemini Integration
+
+* Automatic contract PDF analysis
+* Data extraction from documents
+* Automatic contract field population
+* Extraction of personal, contractual, economic, and commercial information
+* Google Gemini API Key configuration
+* Secure API Key storage using Windows Secure Storage
+* Show or hide the API Key
+* Remove the stored API Key
+
+### 🔔 Notification System
+
+* Native Windows expiration notifications
+* Automatic expiration checks at application startup
+* Configurable notifications for:
+
+  * 90 days before expiration
+  * 60 days before expiration
+  * 30 days before expiration
+  * 15 days before expiration
+  * 7 days before expiration
+  * 1 day before expiration
+  * expiration day
+  * already expired contracts
+* Recovery of missed notifications
+* Notification history
+* Mark notifications as read
+* Delete individual notifications
+* Delete all notifications
+* Open the related contract directly from a notification
+
+### ⚙️ Settings
+
+* Enable or disable notifications
+* Configure expiration checks at startup
+* Configure notification thresholds
+* Configure notifications for expired contracts
+* Configure the Google Gemini API Key
+* Secure API Key management
+
+### 🎨 User Interface
+
+* Windows desktop interface
+* Material 3
+* Sidebar navigation
+* Dashboard
+* Custom application theme
+* Custom primary color
+* Custom application icon
+* Simple and professional interface
 
 ## 🛠️ Technologies
 
 * **Flutter**
 * **Dart**
 * **Material 3**
+* **SQLite**
+* **sqflite_common_ffi**
 * **file_picker**
+* **flutter_desktop_notifications**
+* **flutter_secure_storage**
+* **Google Gemini API**
+* **HTTP**
 * **Git / GitHub**
 
 ## 💻 Platform
@@ -165,15 +415,36 @@ The application is currently developed for:
 ```text
 lib/
 ├── main.dart
+├── database/
+│   └── database.dart
+├── models/
+│   ├── client.dart
+│   ├── contract.dart
+│   ├── notification.dart
+│   └── setting.dart
+├── repositories/
+│   ├── client_repository.dart
+│   ├── contract_repository.dart
+│   ├── notification_repository.dart
+│   └── setting_repository.dart
 ├── screens/
 │   ├── dashboard/
 │   │   └── dashboard_screen.dart
 │   ├── clients/
 │   │   ├── clients_screen.dart
 │   │   └── client_form_dialog.dart
-│   └── contracts/
-│       ├── contracts_screen.dart
-│       └── contract_form_dialog.dart
+│   ├── contracts/
+│   │   ├── contracts_screen.dart
+│   │   ├── contract_form_dialog.dart
+│   │   └── advanced_search_dialog.dart
+│   ├── notifications/
+│   │   └── notifications_screen.dart
+│   └── settings/
+│       └── settings_screen.dart
+├── services/
+│   ├── notification_service.dart
+│   ├── secure_storage_service.dart
+│   └── gemini_service.dart
 └── widgets/
     ├── app_sidebar.dart
     └── stat_card.dart
@@ -188,46 +459,71 @@ assets/
 ### Completed
 
 * [x] Dashboard
-* [x] Client management interface
-* [x] Contract management interface
+* [x] Client management
+* [x] Contract management
+* [x] Client information management
+* [x] Contract expiration management
 * [x] Client and contract search
+* [x] Advanced contract search
+* [x] Date and numeric range filters
 * [x] Form validation
-* [x] PDF document selection
-* [x] Contract status tracking
-* [x] Widget testing
+* [x] SQLite database
+* [x] Persistent client storage
+* [x] Persistent contract storage
+* [x] PDF document management
+* [x] Dedicated application document storage
+* [x] Native Windows notifications
+* [x] Automatic contract expiration notifications
+* [x] Multiple notification thresholds
+* [x] Missed notification recovery
+* [x] Notification history
+* [x] Read notification management
+* [x] Application settings
+* [x] Notification configuration
+* [x] Google Gemini integration
+* [x] Automatic PDF analysis with Gemini
+* [x] Automatic contract data extraction
+* [x] Gemini API Key configuration
+* [x] Secure API Key storage
 * [x] Custom Windows application icon
 * [x] Custom application icon in the interface
+* [x] Widget testing
 
-### In Development
+### 🔜 In Development / Possible Future Improvements
 
-* [ ] SQLite database
-* [ ] Persistent client storage
-* [ ] Persistent contract storage
-* [ ] Real dashboard statistics
-* [ ] Native Windows notifications
-* [ ] Automatic contract expiration notifications
-* [ ] Notification history
-* [ ] Application settings
-* [ ] Improved document management
+* [ ] Improved dashboard statistics and charts
+* [ ] Further document management improvements
+* [ ] Additional export and reporting tools
+* [ ] Additional search and filtering tools
+* [ ] Further user experience improvements
 
 ## 🎯 Project Goals
 
 The project focuses on:
 
 * ease of use
-* clean code organization
+* clean and maintainable code
 * separation of responsibilities
 * data validation
-* local data management
-* future notification automation
+* local data persistence
+* automated contract expiration management
+* secure credential management
+* artificial intelligence integration
+* local document management
 * building a complete Windows desktop application
 
 ## 📌 Project Status
 
 **In development**
 
-The project is currently in the interface and core functionality development phase. The next stages will focus on SQLite data persistence and the Windows notification system.
+ContractEnd currently includes the main functionality required to manage clients, contracts, documents, expiration dates, and notifications.
+
+SQLite persistence, Windows notifications, advanced contract search, and Google Gemini integration for automatic document analysis are currently operational.
+
+The project continues to evolve with further improvements to functionality, user interface, and data management.
 
 ## 📄 License
 
-Personal project developed for learning, experimentation, and portfolio purposes.
+The source code of **ContractEnd** is licensed under the **MIT License**.
+
+The project uses third-party packages and libraries, which remain subject to their respective licenses.
