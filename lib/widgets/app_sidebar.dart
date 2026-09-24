@@ -26,12 +26,15 @@ class AppSidebar extends StatelessWidget {
             children: [
               Image.asset('assets/icons/app_icon.png', width: 40, height: 40),
               const SizedBox(width: 10),
-              const Text(
-                'ContractEnd',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              Flexible(
+                child: Text(
+                  'ContractEnd',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
