@@ -22,6 +22,14 @@ L'applicazione permette di organizzare i dati dei clienti e dei contratti, assoc
 
 Il progetto è stato sviluppato con particolare attenzione alla semplicità di utilizzo, alla gestione locale dei dati e alla separazione delle responsabilità tra interfaccia, persistenza e servizi applicativi.
 
+## Ultima Build
+
+L'ultima build compilata di ContractEnd per Windows è disponibile qui sotto.
+
+**[Scarica ContractEnd per Windows](https://darioszhub.github.io/ContractEnd/ContractEnd-windows.zip)**
+
+Il download viene aggiornato automaticamente ogni volta che viene generata con successo una nuova build dal branch `main`.
+
 ## ✨ Funzionalità
 
 ### 👥 Gestione clienti
@@ -281,6 +289,14 @@ The application allows users to organize client and contract information, attach
 It also integrates **Google Gemini** to automatically analyze contract PDF documents and populate contract fields, reducing manual data entry.
 
 The project focuses on simplicity, local data management, clean code organization, and separation of responsibilities between the user interface, data persistence, and application services.
+
+## Latest Build
+
+The latest compiled Windows build of ContractEnd is available below.
+
+**[Download ContractEnd for Windows](https://darioszhub.github.io/ContractEnd/ContractEnd-windows.zip)**
+
+The download is automatically updated whenever a new build is successfully generated from the `main` branch.
 
 ## ✨ Features
 
