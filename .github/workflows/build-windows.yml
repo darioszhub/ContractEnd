@@ -40,46 +40,34 @@ jobs:
       - name: Run tests
         run: flutter test
 
+      - name: Install website dependencies
+        run: npm ci
+
+      - name: Build website
+        run: npm run build
+
       - name: Build Windows release
         env:
           CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
         run: flutter build windows --release
 
-      - name: Create ZIP archive
+      - name: Prepare GitHub Pages
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path "pages" | Out-Null
+
+          Copy-Item -Path "website\*" -Destination "pages" -Recurse -Force
 
           Compress-Archive `
             -Path "build\windows\x64\runner\Release\*" `
             -DestinationPath "pages\ContractEnd-windows.zip" `
             -Force
 
-          @"
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>ContractEnd - Latest Build</title>
-          </head>
-          <body>
-            <h1>ContractEnd</h1>
-            <p>Latest Windows build</p>
-            <p>
-              <a href="ContractEnd-windows.zip">
-                Download ContractEnd for Windows
-              </a>
-            </p>
-          </body>
-          </html>
-          "@ | Out-File -FilePath "pages\index.html" -Encoding utf8
-
       - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: pages
 

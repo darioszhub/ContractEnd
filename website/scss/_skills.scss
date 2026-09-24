@@ -1,0 +1,35 @@
+.skills {
+
+    display: flex;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 15px;
+
+}
+
+
+
+.skills span {
+
+    background: var(--skill-bg);
+
+    padding: 12px 25px;
+
+    border-radius: 30px;
+
+    border: 1px solid var(--border);
+
+    transition: .3s;
+
+}
+
+.skills span:hover {
+
+    background: var(--accent);
+
+    color: #111;
+
+}

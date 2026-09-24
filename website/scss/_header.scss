@@ -1,0 +1,141 @@
+header {
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: var(--header-bg);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+    transition: background-color .3s ease, border-color .3s ease;
+
+}
+
+
+
+nav {
+
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.nav-right {
+
+    display: flex;
+    align-items: center;
+    gap: 30px;
+
+}
+
+
+.logo {
+
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+
+}
+
+
+
+.menu {
+
+    display: flex;
+    gap: 35px;
+
+}
+
+
+
+.menu a {
+
+    position: relative;
+    color: var(--text);
+    text-decoration: none;
+    transition: color .3s ease;
+
+
+}
+
+.menu a::after {
+
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    transition: width .3s ease;
+
+}
+
+
+.menu a:hover, .menu a.active {
+
+    color: var(--accent);
+
+}
+
+.menu a:hover::after,
+.menu a.active::after {
+
+    width: 100%;
+
+}
+
+.theme-toggle {
+
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color .3s ease, background-color .3s ease, border-color .3s ease, transform .3s ease;
+
+}
+
+.menu-toggle {
+
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+
+}
+
+.menu-toggle span {
+
+    display: block;
+    width: 28px;
+    height: 2px;
+    background: var(--text);
+    margin: 6px 0;
+    transition: .3s;
+
+}
+
+@media (hover: hover) {
+
+    .theme-toggle:hover {
+        color: var(--accent);
+        background: var(--surface-light);
+        border-color: var(--accent);
+        transform: rotate(15deg);
+    }
+
+}

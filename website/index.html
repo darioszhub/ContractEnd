@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ContractEnd | Applicazione Windows per la gestione di clienti, contratti e scadenze.">
+    <meta name="theme-color" content="#0f172a">
+    <title>ContractEnd | Dario Grillo</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="canonical" href="https://darioszhub.github.io/ContractEnd/">
+    <link rel="preload" href="fonts/Inter/inter-v20-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/Inter/inter-v20-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/style.min.css">
+</head>
+
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="https://darioszhub.github.io/" class="logo" aria-label="Dario Grillo - Portfolio" title="Dario Grillo - Portfolio">DG</a>
+                <div class="nav-right">
+                    <div class="menu">
+                        <a href="#project">Progetto</a>
+                        <a href="#features">Funzionalità</a>
+                        <a href="#technologies">Tecnologie</a>
+                        <a href="#download">Download</a>
+                    </div>
+                    <!-- Theme Button -->
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Attiva tema chiaro">
+                        ☀
+                    </button>
+                    <!-- Hamburger Menu -->
+                    <button class="menu-toggle" aria-label="Apri menu" aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <main class="container">
+        <!-- Hero -->
+        <section class="hero">
+            <div>
+                <h1>ContractEnd</h1>
+                <h2>Gestione clienti e contratti</h2>
+                <p>Applicazione desktop per Windows progettata per gestire clienti, contratti, documenti e relative scadenze in modo semplice e organizzato.</p>
+                <div class="hero-buttons">
+                    <a href="#download" class="button">Scarica ultima build</a>
+                    <a href="https://github.com/darioszhub/ContractEnd" class="button button-secondary" target="_blank"
+                        rel="noopener noreferrer">
+                        GitHub
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-screenshot">
+                <div class="screenshot-container">
+                    <img src="img/contractend-dashboard.png" alt="Interfaccia principale di ContractEnd" loading="lazy">
+                </div>
+            </div>
+
+        </section>
+
+
+
+        <!-- Project -->
+        <section id="project">
+            <h2 class="title"> Il progetto</h2>
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>
+                        Cos'è ContractEnd?
+                    </h3>
+
+                    <p>
+                        ContractEnd è un'applicazione desktop sviluppata
+                        con Flutter per Windows, pensata per semplificare
+                        la gestione dei clienti e dei relativi contratti.
+                    </p>
+
+                    <p>
+                        L'applicazione permette di associare i contratti
+                        ai clienti, archiviare i documenti PDF, controllare
+                        le scadenze e ricevere notifiche prima della
+                        scadenza.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Gestione locale
+                    </h3>
+
+                    <p>
+                        I dati vengono gestiti localmente tramite SQLite,
+                        mentre i documenti vengono archiviati sul computer
+                        dell'utente.
+                    </p>
+
+                    <p>
+                        L'applicazione è pensata per essere utilizzata
+                        direttamente su Windows senza richiedere
+                        un'infrastruttura server.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+
+
+
+        <!-- Features -->
+
+        <section id="features">
+
+            <h2 class="title">
+                Funzionalità
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+                    <h3>Clienti</h3>
+                    <p>Creazione, modifica e gestione dei clienti presenti nell'applicazione.</p>
+                </div>
+                <div class="card">
+                    <h3>Contratti</h3>
+                    <p>Gestione dei contratti, delle informazioni contrattuali e dei documenti associati.</p>
+                </div>
+                <div class="card">
+                    <h3>
+                        Scadenze
+                    </h3>
+
+                    <p>
+                        Visualizzazione dello stato dei contratti e
+                        individuazione delle prossime scadenze.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Notifiche
+                    </h3>
+
+                    <p>
+                        Notifiche desktop per ricordare le scadenze
+                        imminenti dei contratti.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Ricerca
+                    </h3>
+
+                    <p>
+                        Ricerca e filtraggio di clienti e contratti
+                        per trovare rapidamente le informazioni.
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>
+                        Gemini AI
+                    </h3>
+
+                    <p>
+                        Estrazione automatica delle informazioni
+                        contrattuali tramite intelligenza artificiale.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Technologies -->
+
+        <section id="technologies">
+
+            <h2 class="title">
+                Tecnologie
+            </h2>
+
+
+            <div class="skills">
+                <span>Flutter</span>
+                <span>Dart</span>
+                <span>SQLite</span>
+                <span>
+                    Windows
+                </span>
+
+                <span>
+                    Gemini AI
+                </span>
+
+                <span>
+                    Git
+                </span>
+
+                <span>
+                    GitHub Actions
+                </span>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Download -->
+
+        <section id="download">
+
+            <h2 class="title">
+                Ultima Build
+            </h2>
+
+
+            <div class="cards">
+
+                <div class="card">
+                    <h3>ContractEnd per Windows</h3>
+                    <p>Scarica l'ultima versione compilata dell'applicazione per Windows.</p>
+                    <a href="ContractEnd-windows.zip" class="button">Scarica ContractEnd</a>
+                </div>
+
+
+                <div class="card">
+                    <h3>Codice sorgente</h3>
+                    <p>Il codice sorgente del progetto è disponibile pubblicamente su GitHub.</p>
+                    <a href="https://github.com/darioszhub/ContractEnd" class="button" target="_blank" rel="noopener noreferrer">Visualizza su GitHub</a>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+
+
+    <!-- footer -->
+    <footer>
+
+        © <span id="anno"></span> Dario Grillo ·
+        <a href="https://darioszhub.github.io/privacy-policy.html" aria-label="Privacy Policy" title="Privacy Policy">Privacy Policy</a>
+
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/service-worker-registration.js"></script>
+
+</body>
+
+</html>

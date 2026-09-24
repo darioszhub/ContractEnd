@@ -1,0 +1,26 @@
+{
+  "name": "contractend",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">\r   <img src=\"assets/icons/icon_master.png\" width=\"256\" alt=\"ContractEnd\">\r </p>",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "dev": "sass --watch --style=compressed website/scss/main.scss website/css/style.min.css",
+    "build": "sass --style=compressed website/scss/main.scss website/css/style.min.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darioszhub/ContractEnd.git"
+  },
+  "keywords": [],
+  "author": "Dario Grillo",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/darioszhub/ContractEnd/issues"
+  },
+  "homepage": "https://github.com/darioszhub/ContractEnd#readme",
+  "devDependencies": {
+    "sass": "^1.105.0"
+  }
+}
