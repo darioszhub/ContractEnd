@@ -32,6 +32,8 @@ jobs:
         run: flutter test
 
       - name: Build Windows release
+        env:
+          CL: /D_SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS
         run: flutter build windows --release
 
       - name: Create ZIP archive
