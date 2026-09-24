@@ -16,6 +16,10 @@ jobs:
     name: Build ContractEnd for Windows
     runs-on: windows-latest
 
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -51,10 +55,34 @@ jobs:
             -DestinationPath "pages\ContractEnd-windows.zip" `
             -Force
 
+          @"
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>ContractEnd - Latest Build</title>
+          </head>
+          <body>
+            <h1>ContractEnd</h1>
+            <p>Latest Windows build</p>
+            <p>
+              <a href="ContractEnd-windows.zip">
+                Download ContractEnd for Windows
+              </a>
+            </p>
+          </body>
+          </html>
+          "@ | Out-File -FilePath "pages\index.html" -Encoding utf8
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: pages
 
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
