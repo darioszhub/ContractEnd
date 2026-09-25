@@ -52,3 +52,63 @@
     cursor: pointer;
 
 }
+
+.feature-cards {
+
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+}
+
+.feature-card {
+
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr;
+    align-items: center;
+    gap: 40px;
+
+}
+
+.feature-card .card-content p {
+
+    color: var(--text-secondary);
+    line-height: 1.7;
+
+}
+
+.feature-card .card-image {
+
+    width: 100%;
+    overflow: hidden;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+
+}
+
+.feature-card .card-image img {
+
+    display: block;
+    width: 100%;
+    height: auto;
+
+}
+
+.feature-card:nth-child(even) {
+
+    grid-template-columns: 1.5fr 1.5fr;
+
+}
+
+.feature-card:nth-child(even) .card-content {
+
+    order: 2;
+
+}
+
+.feature-card:nth-child(even) .card-image {
+
+    order: 1;
+    
+}

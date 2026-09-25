@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ContractEnd | Applicazione Windows per la gestione di clienti, contratti e scadenze.">
+    <meta name="description"
+        content="ContractEnd | Applicazione Windows per la gestione di clienti, contratti e scadenze.">
     <meta name="theme-color" content="#0f172a">
     <title>ContractEnd | Dario Grillo</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -21,7 +22,8 @@
     <header>
         <div class="container">
             <nav>
-                <a href="https://darioszhub.github.io/" class="logo" aria-label="Dario Grillo - Portfolio" title="Dario Grillo - Portfolio">DG</a>
+                <a href="https://darioszhub.github.io/" class="logo" aria-label="Dario Grillo - Portfolio"
+                    title="Dario Grillo - Portfolio">DG</a>
                 <div class="nav-right">
                     <div class="menu">
                         <a href="#project">Progetto</a>
@@ -51,7 +53,8 @@
             <div>
                 <h1>ContractEnd</h1>
                 <h2>Gestione clienti e contratti</h2>
-                <p>Applicazione desktop per Windows progettata per gestire clienti, contratti, documenti e relative scadenze in modo semplice e organizzato.</p>
+                <p>Applicazione desktop per Windows progettata per gestire clienti, contratti, documenti e relative
+                    scadenze in modo semplice e organizzato.</p>
                 <div class="hero-buttons">
                     <a href="#download" class="button">Scarica ultima build</a>
                     <a href="https://github.com/darioszhub/ContractEnd" class="button button-secondary" target="_blank"
@@ -61,14 +64,11 @@
                 </div>
             </div>
 
-            <div class="hero-screenshot">
-                <div class="screenshot-container">
-                    <img src="img/contractend-dashboard.png" alt="Interfaccia principale di ContractEnd" loading="lazy">
-                </div>
+            <div class="profile">
+                <img src="img/app_icon.png" alt="Icona di ContractEnd" loading="lazy">
             </div>
 
         </section>
-
 
 
         <!-- Project -->
@@ -77,181 +77,134 @@
             <div class="cards">
 
                 <div class="card">
-
-                    <h3>
-                        Cos'è ContractEnd?
-                    </h3>
-
-                    <p>
-                        ContractEnd è un'applicazione desktop sviluppata
-                        con Flutter per Windows, pensata per semplificare
-                        la gestione dei clienti e dei relativi contratti.
-                    </p>
-
-                    <p>
-                        L'applicazione permette di associare i contratti
-                        ai clienti, archiviare i documenti PDF, controllare
-                        le scadenze e ricevere notifiche prima della
-                        scadenza.
-                    </p>
-
+                    <h3>Cos'è ContractEnd?</h3>
+                    <p>ContractEnd è un'applicazione desktop sviluppata con Flutter per Windows, pensata per
+                        semplificare la gestione dei clienti e dei relativi contratti.</p>
+                    <p>L'applicazione permette di associare i contratti ai clienti, archiviare i documenti PDF,
+                        controllare le scadenze e ricevere notifiche prima della scadenza.</p>
                 </div>
-
 
                 <div class="card">
-
-                    <h3>
-                        Gestione locale
-                    </h3>
-
-                    <p>
-                        I dati vengono gestiti localmente tramite SQLite,
-                        mentre i documenti vengono archiviati sul computer
-                        dell'utente.
-                    </p>
-
-                    <p>
-                        L'applicazione è pensata per essere utilizzata
-                        direttamente su Windows senza richiedere
-                        un'infrastruttura server.
-                    </p>
-
+                    <h3>Gestione locale</h3>
+                    <p>I dati vengono gestiti localmente tramite SQLite, mentre i documenti vengono archiviati sul
+                        computer dell'utente.</p>
+                    <p>L'applicazione è pensata per essere utilizzata direttamente su Windows senza richiedere
+                        un'infrastruttura server.</p>
                 </div>
 
-
             </div>
-
         </section>
-
-
-
-
-
 
         <!-- Features -->
-
         <section id="features">
+            <h2 class="title">Funzionalità</h2>
+            <div class="cards feature-cards">
 
-            <h2 class="title">
-                Funzionalità
-            </h2>
+                <div class="card feature-card">
 
-
-            <div class="cards">
-
-                <div class="card">
-                    <h3>Clienti</h3>
-                    <p>Creazione, modifica e gestione dei clienti presenti nell'applicazione.</p>
-                </div>
-                <div class="card">
-                    <h3>Contratti</h3>
-                    <p>Gestione dei contratti, delle informazioni contrattuali e dei documenti associati.</p>
-                </div>
-                <div class="card">
-                    <h3>
-                        Scadenze
-                    </h3>
-
-                    <p>
-                        Visualizzazione dello stato dei contratti e
-                        individuazione delle prossime scadenze.
-                    </p>
+                    <div class="card-content">
+                        <h3>Clienti</h3>
+                        <p>Creazione, modifica e gestione dei clienti presenti nell'applicazione, con possibilità di
+                            consultare e aggiornare rapidamente le relative informazioni anagrafiche.</p>
+                    </div>
+                    <div class="card-image">
+                        <img src="img/clienti.png" alt="Sezione Clienti di ContractEnd" loading="lazy">
+                    </div>
 
                 </div>
 
 
-                <div class="card">
+                <div class="card feature-card">
 
-                    <h3>
-                        Notifiche
-                    </h3>
-
-                    <p>
-                        Notifiche desktop per ricordare le scadenze
-                        imminenti dei contratti.
-                    </p>
-
-                </div>
-
-
-                <div class="card">
-
-                    <h3>
-                        Ricerca
-                    </h3>
-
-                    <p>
-                        Ricerca e filtraggio di clienti e contratti
-                        per trovare rapidamente le informazioni.
-                    </p>
+                    <div class="card-content">
+                        <h3>Contratti</h3>
+                        <p>Gestione completa dei contratti associati ai clienti, delle principali informazioni
+                            contrattuali e dei documenti PDF archiviati nell'applicazione.</p>
+                    </div>
+                    <div class="card-image">
+                        <img src="img/contratti.png" alt="Sezione Contratti di ContractEnd" loading="lazy">
+                    </div>
 
                 </div>
 
 
-                <div class="card">
+                <div class="card feature-card">
 
-                    <h3>
-                        Gemini AI
-                    </h3>
-
-                    <p>
-                        Estrazione automatica delle informazioni
-                        contrattuali tramite intelligenza artificiale.
-                    </p>
+                    <div class="card-content">
+                        <h3>Scadenze</h3>
+                        <p>Visualizzazione dello stato dei contratti e monitoraggio delle relative date di scadenza, per
+                            individuare rapidamente i contratti attivi, in scadenza o già scaduti.</p>
+                    </div>
+                    <div class="card-image">
+                        <img src="img/contractend-dashboard.png" alt="Sezione Scadenze di ContractEnd" loading="lazy">
+                    </div>
 
                 </div>
 
+
+                <div class="card feature-card">
+
+                    <div class="card-content">
+                        <h3>Notifiche</h3>
+                        <p>Notifiche desktop automatiche per ricordare le scadenze imminenti dei contratti e aiutare
+                            l'utente a tenere sotto controllo gli adempimenti in prossimità della scadenza.</p>
+                    </div>
+                    <div class="card-image">
+                        <img src="img/notifiche.png" alt="Notifiche desktop di ContractEnd" loading="lazy">
+                    </div>
+
+                </div>
+
+
+                <div class="card feature-card">
+
+                    <div class="card-content">
+                        <h3>Ricerca</h3>
+                        <p>Ricerca e filtraggio di clienti e contratti attraverso diversi criteri, per individuare
+                            rapidamente le informazioni desiderate anche all'interno di un archivio più ampio.</p>
+                    </div>
+                    <div class="card-image">
+                        <img src="img/ricerca.png" alt="Ricerca di ContractEnd" loading="lazy">
+                    </div>
+
+                </div>
+
+
+                <div class="card feature-card">
+
+                    <div class="card-content">
+                        <h3>Gemini AI</h3>
+                        <p>Estrazione automatica delle principali informazioni contrattuali tramite intelligenza
+                            artificiale, semplificando l'inserimento dei dati a partire dai documenti PDF.</p>
+                    </div>
+                    <div class="card-image">
+                        <img src="img/gemini-ai.png" alt="Funzionalità Gemini AI di ContractEnd" loading="lazy">
+                    </div>
+
+                </div>
 
             </div>
-
         </section>
 
-
-
         <!-- Technologies -->
-
         <section id="technologies">
-
-            <h2 class="title">
-                Tecnologie
-            </h2>
-
+            <h2 class="title">Tecnologie</h2>
 
             <div class="skills">
                 <span>Flutter</span>
                 <span>Dart</span>
                 <span>SQLite</span>
-                <span>
-                    Windows
-                </span>
-
-                <span>
-                    Gemini AI
-                </span>
-
-                <span>
-                    Git
-                </span>
-
-                <span>
-                    GitHub Actions
-                </span>
-
+                <span>Windows</span>
+                <span>Gemini AI</span>
+                <span>Git</span>
+                <span>GitHub Actions</span>
             </div>
 
         </section>
 
-
-
         <!-- Download -->
-
         <section id="download">
-
-            <h2 class="title">
-                Ultima Build
-            </h2>
-
-
+            <h2 class="title">Ultima Build</h2>
             <div class="cards">
 
                 <div class="card">
@@ -264,15 +217,14 @@
                 <div class="card">
                     <h3>Codice sorgente</h3>
                     <p>Il codice sorgente del progetto è disponibile pubblicamente su GitHub.</p>
-                    <a href="https://github.com/darioszhub/ContractEnd" class="button" target="_blank" rel="noopener noreferrer">Visualizza su GitHub</a>
+                    <a href="https://github.com/darioszhub/ContractEnd" class="button" target="_blank"
+                        rel="noopener noreferrer">Visualizza su GitHub</a>
                 </div>
 
             </div>
         </section>
 
     </main>
-
-
 
     <!-- footer -->
     <footer>
@@ -283,7 +235,6 @@
     </footer>
 
     <script src="js/main.js"></script>
-    <script src="js/service-worker-registration.js"></script>
 
 </body>
 
