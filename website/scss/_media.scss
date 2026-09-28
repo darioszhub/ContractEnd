@@ -26,11 +26,6 @@
 
     }
 
-    .hero-screenshot {
-
-        order: 2;
-
-    }
 
     .profile {
 
@@ -56,7 +51,7 @@
 
 @media (max-width: 768px) {
 
-    
+
 
     header {
 
@@ -145,6 +140,12 @@
     .feature-card:nth-child(even) .card-content {
 
         order: 1;
+
+    }
+
+    .hero {
+
+        gap: 0px;
 
     }
 

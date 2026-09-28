@@ -44,15 +44,6 @@
 
 }
 
-.card-link {
-
-    display: block;
-    color: inherit;
-    text-decoration: none;
-    cursor: pointer;
-
-}
-
 .feature-cards {
 
     display: flex;
@@ -110,5 +101,5 @@
 .feature-card:nth-child(even) .card-image {
 
     order: 1;
-    
+
 }

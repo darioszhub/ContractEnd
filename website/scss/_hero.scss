@@ -39,29 +39,6 @@
 
 }
 
-.hero-screenshot {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.hero-screenshot .screenshot-container {
-    width: 100%;
-    max-width: 700px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 15px;
-    backdrop-filter: blur(15px);
-    overflow: hidden;
-}
-
-.hero-screenshot .screenshot-container img {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
 
 .button {
 
@@ -85,61 +62,6 @@
 
 }
 
-
-.competenze-box {
-
-    margin-top: 40px;
-    background: var(--surface-light);
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    padding: 25px;
-    backdrop-filter: blur(15px);
-
-}
-
-
-
-.competenze-box h3 {
-
-    color: var(--accent-secondary);
-    margin-bottom: 20px;
-
-}
-
-.competenze-mini {
-
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-
-}
-
-.competenza-mini-card {
-
-    background: var(--bg);
-    border: 1px solid var(--mini-card-border);
-    padding: 15px;
-    border-radius: 10px;
-
-}
-
-.competenza-mini-card h4 {
-
-    color: var(--text);
-    font-size: 15px;
-    margin-bottom: 8px;
-
-}
-
-
-
-.competenza-mini-card p {
-
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--text-secondary);
-
-}
 
 .profile {
 
